@@ -1,0 +1,100 @@
+
+body {
+  background: #fafafa;
+  color: #333333;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: #444444;
+
+
+}
+
+.bg-steel {
+  background-color: #5f788a;
+}
+
+.site-header .navbar-nav .nav-link {
+  color: #cbd5db;
+}
+
+.site-header .navbar-nav .nav-link:hover {
+  color: #ffffff;
+}
+
+.site-header .navbar-nav .nav-link.active {
+  font-weight: 500;
+}
+
+.block1 {
+    height: 55px;
+    width: 900px;
+    margin: 10px auto;
+    border: 2px;
+    display: flex;
+    justify-content: center;
+}
+
+.block2 {
+    height: 50px;
+    width: 900px;
+    margin: 10px auto;
+    border: 2px;
+    display: flex;
+    justify-content: center;
+}
+
+.details{
+    margin: 80px auto;
+    width: 700px;
+    height: auto;
+    border: 2px;
+}
+
+.account-img {
+  height: 125px;
+  width: 125px;
+  margin-right: 20px;
+  margin-bottom: 16px;
+}
+
+.account-heading {
+  font-size: 2.5rem;
+}
+
+.content-section {
+  background: #ffffff;
+  padding: 10px 20px;
+  border: 1px solid #dddddd;
+  border-radius: 3px;
+  margin-bottom: 20px;
+}
+
+section {
+    text-align: center;
+    padding: 2%;
+}
+article{
+    margin-top: 20px;
+    margin-left: 40px;
+    width: 30%;
+    font-family: Baskerville Old Face;
+    float: left;
+}
+article img{
+    width: 100%;
+}
+.block{
+    border-radius: 20px;
+    height: 300px;
+    overflow: hidden;
+}
+
+.pic-center {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
+}
+
+

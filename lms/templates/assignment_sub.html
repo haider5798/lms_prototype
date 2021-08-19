@@ -1,0 +1,21 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="container">
+    <div class="jumbotron jumbotron-fluid">
+        <div class="container">
+        <h1 class="display-4">{{current_user.username}}</h1>
+        <p class="lead">Department of Computer Science</p>
+        </div>
+    </div>
+    <div class="content-section">
+        <div class="course">
+            <h2>{{current_user.course}}</h2>
+            <a href="/detail_page/" class="btn btn-info btn-xs">Details</a>
+        </div>
+	</div>
+</div>
+{% endblock content %}
+
+
+
+

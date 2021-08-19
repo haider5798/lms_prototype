@@ -1,0 +1,82 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="container">
+    <div class="jumbotron jumbotron-fluid">
+        <div class="container">
+        <h2 class="display-4">{{course.upper()}}</h2>
+        <p class="lead">Department of Computer Sciences</p>
+        </div>
+    </div>
+   {%  with user_category = current_user.user_category %}
+    {% if user_category == 'Student' %}
+    <div class="card w-75 mx-auto">
+      <div class="card-header font-weight-bold">
+        File Upload
+      </div>
+      <div class="card-body">
+          <p> </p>
+          <form method="POST" action="">
+                {{ form.hidden_tag() }}
+                <fieldset class="form-group">
+                    <div class="form-group">
+                        {{ form.assignment.label(class="form-control-label") }}
+                        {% if form.assignment.errors %}
+                            {{ form.assignment(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.assignment.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.assignment(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+                </fieldset>
+                <div class="form-group text-center">
+                {{ form.submit(class="btn btn-info") }}
+            </div>
+          </form>
+      </div>
+    </div>
+    <br>
+    <div class="card">
+        <div class="card-header font-weight-bold">
+            Plagiarism Details
+        </div>
+        <div class="card-body text-center">
+            <p class="card-text"> Plagiarism Found: 0%</p>
+            <a href="#" class="btn btn-primary">Submit Assignment</a>
+        </div>
+    </div>
+    <br>
+    {% elif user_category == 'Teacher' %}
+        <div class="table-responsive table-bordered">
+            <table class="table table-hover table-striped">
+              <thead class="thead-dark">
+                <tr>
+                    {% for heading in headings %}
+                  <th scope="col">{{ heading }}</th>
+                    {% endfor %}
+                </tr>
+              </thead>
+                <tbody>
+                {% for row in data %}
+                <tr>
+                    <th scope="row">{{ row.id }}</th>
+                    <th scope="row">{{ row.student_username }}</th>
+                    <th scope="row">
+                        <a href="/delete/{{row.id}}/" class="btn btn-warning btn-xs">Open</a>
+                    </th>
+                </tr>
+                {% endfor %}
+                </tbody>
+        </table>
+                </div>
+    {% endif %}
+    {% endwith %}
+</div>
+{% endblock content %}
+
+
+
+
