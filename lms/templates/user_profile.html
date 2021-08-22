@@ -6,7 +6,7 @@
       <div class="media">
         <img class="rounded-circle account-img" src="{{ image_file }}">
         <div class="media-body">
-          <h2 class="account-heading text-light">{{ current_user.username }}</h2>
+          <h2 class="account-heading text-light">{{ current_user.name }}</h2>
           <p class="text-secondary text-light">{{ current_user.email }}</p>
         </div>
       </div>
@@ -15,16 +15,16 @@
             <fieldset class="form-group">
                 <legend class="border-bottom mb-4">User Profile</legend>
                 <div class="form-group">
-                    {{ form.username.label(class="form-control-label") }}
-                    {% if form.username.errors %}
-                        {{ form.username(class="form-control form-control-lg is-invalid") }}
+                    {{ form.name.label(class="form-control-label") }}
+                    {% if form.name.errors %}
+                        {{ form.name(class="form-control form-control-lg is-invalid") }}
                         <div class="invalid-feedback">
-                            {% for error in form.username.errors %}
+                            {% for error in form.name.errors %}
                                 <span>{{ error }}</span>
                             {% endfor %}
                         </div>
                     {% else %}
-                        {{ form.username(class="form-control form-control-lg") }}
+                        {{ form.name(class="form-control form-control-lg ", readonly=True) }}
                     {% endif %}
                 </div>
                 <div class="form-group">
@@ -37,7 +37,7 @@
                             {% endfor %}
                         </div>
                     {% else %}
-                        {{ form.email(class="form-control form-control-lg") }}
+                        {{ form.email(class="form-control form-control-lg", readonly=True) }}
                     {% endif %}
                 </div>
                 <div class="form-group">
@@ -51,7 +51,7 @@
                 </div>
             </fieldset>
             <div class="form-group">
-                {{ form.submit(class="btn btn-outline-info") }}
+                {{ form.submit(class="btn btn-info") }}
             </div>
         </form>
     </div>

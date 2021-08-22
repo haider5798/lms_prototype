@@ -28,11 +28,19 @@ def login():
 
 
 @app.route('/home', methods=['GET', 'POST'])
+@login_required
 def home():
     return render_template('home.html',  title='Home')
 
 
+@app.route('/course_management', methods=['GET', 'POST'])
+@login_required
+def course_management():
+    return render_template('course_management.html',  title='Course Management')
+
+
 @app.route('/account_management', methods=['GET', 'POST'])
+@login_required
 def account_management():
     reg_form = RegistrationForm()
     search_form = UserSearchForm()
@@ -41,8 +49,8 @@ def account_management():
     if reg_form.validate_on_submit():
         hashed_pass = bcrypt.generate_password_hash(reg_form.password.data).decode('utf-8')
         user = User(name=reg_form.name.data, username=reg_form.username.data, email=reg_form.email.data,
-                    address=reg_form.address.data, mobile_no=reg_form.mobile_no.data, course=reg_form.course.data,
-                    password=hashed_pass, user_category=reg_form.user_category.data)
+                    address=reg_form.address.data, mobile_no=reg_form.mobile_no.data, user_category='Admin',
+                    password=hashed_pass)
         db.session.add(user)
         db.session.commit()
         return redirect(url_for('register'))
@@ -53,19 +61,15 @@ def account_management():
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     reg_form = RegistrationForm()
-    search_form = UserSearchForm()
-    headings = ['Username', 'User Category', 'Email', '          ']
-    data = User.query.all()
     if reg_form.validate_on_submit():
         hashed_pass = bcrypt.generate_password_hash(reg_form.password.data).decode('utf-8')
         user = User(name=reg_form.name.data, username=reg_form.username.data, email=reg_form.email.data,
-                    address=reg_form.address.data, mobile_no=reg_form.mobile_no.data, course=reg_form.course.data,
+                    address=reg_form.address.data, mobile_no=reg_form.mobile_no.data,
                     password=hashed_pass, user_category=reg_form.user_category.data)
         db.session.add(user)
         db.session.commit()
         return redirect(url_for('register'))
-    return render_template('register.html', title='Account Registration', form=reg_form, data=data,
-                           search_form=search_form, headings=headings)
+    return render_template('register.html', title='Account Registration', form=reg_form)
 
 
 def save_assignment(file):
@@ -111,59 +115,23 @@ def save_picture(form_picture):
     return picture_fn
 
 
-# @app.route('/register', methods=['GET', 'POST'])
-# def register():
-#     reg_form = RegistrationForm()
-#     search_form = UserSearchForm()
-#     headings = ['Username', 'Email', 'User Category']
-#     if search_form.validate_on_submit():
-#         data = User.query.filter_by(username=search_form.search_box.data).all()
-#         if data:
-#             user_data = data
-#             reg_form.username.data = data.username
-#             reg_form.email.data = data.email
-#             reg_form.user_category.data = data.user_category
-#             reg_form.password.data = data.password
-#             reg_form.confirm_password.data = data.password
-
-#         else:
-#             flash('No Record Found Against This Username.', 'danger')
-#             user_data = User.query.all()
-#     else:
-#         user_data = User.query.all()
-
-#     if reg_form.validate_on_submit():
-#         hashed_pass = bcrypt.generate_password_hash(reg_form.password.data).decode('utf-8')
-#         user = User(username=reg_form.username.data, email=reg_form.email.data,
-#                     user_category=reg_form.user_category.data, password=hashed_pass)
-#         db.session.add(user)
-#         db.session.commit()
-#         flash(f'User Account Registration Successful', 'success')
-#         return redirect(url_for('register'))
-
-#     return render_template('account_management.html', title='Accounts Management', form=reg_form, data=user_data,
-#                            search_form=search_form, headings=headings)
-
-
-# @app.route('/user_profile', methods=['GET', 'POST'])
-# @login_required
-# def user_profile():
-#     update_form = UpdateAccountForm()
-#     if update_form.validate_on_submit():
-#         if update_form.picture.data:
-#             picture_file = save_picture(update_form.picture.data)
-#             current_user.image_file = picture_file
-#         current_user.username = update_form.username.data
-#         current_user.email = update_form.email.data
-#         db.session.commit()
-#         flash('Your account has been updated!', 'success')
-#         return redirect(url_for('user_profile'))
-#     elif request.method == 'GET':
-#         update_form.username.data = current_user.username
-#         update_form.email.data = current_user.email
-#     image_file = url_for('static', filename='profile_pics/' + current_user.image_file)
-#     return render_template('user_profile.html', title='User Profile',
-#                            image_file=image_file, form=update_form)
+@app.route('/user_profile', methods=['GET', 'POST'])
+@login_required
+def user_profile():
+    update_form = UpdateAccountForm()
+    if update_form.validate_on_submit():
+        if update_form.picture.data:
+            picture_file = save_picture(update_form.picture.data)
+            current_user.image_file = picture_file
+        db.session.commit()
+        # flash('Your account has been updated!', 'success')
+        return redirect(url_for('user_profile'))
+    elif request.method == 'GET':
+        update_form.name.data = current_user.name
+        update_form.email.data = current_user.email
+        image_file = url_for('static', filename='profile_pics/' + current_user.image_file)
+    return render_template('user_profile.html', title='User Profile',
+                           image_file=image_file, form=update_form)
 
 
 @app.route('/logout')
