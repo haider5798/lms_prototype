@@ -64,10 +64,13 @@
             </fieldset>
                 <div class="form-group">
                 {{ form.submit(class="btn btn-outline-info") }}
-                    <small class="text-muted ml-2 text-light">
-                        <a class="text-light" href="{{url_for('reset_request')}}">Forgot Password?</a>
+                    <small class="text-muted ml-2 ">
+                        <a href="{{url_for('reset_request')}}">Forgot Password?</a>
                     </small>
                 </div>
+                <small class="text-muted ml-2 ">
+                    <a href="{{url_for('register')}}">Don't Have An Account?</a>
+                </small>
             </form>
         <div class="container-fluid bg-secondary">
           {% with messages = get_flashed_messages(with_categories=true) %}

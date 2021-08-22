@@ -1,7 +1,6 @@
 import datetime
 import os
 import secrets
-import time
 from PIL import Image
 from flask import (Response, redirect, flash, render_template, url_for, request)
 from flask_login import login_user, logout_user, current_user, login_required
@@ -33,6 +32,24 @@ def home():
     return render_template('home.html',  title='Home')
 
 
+@app.route('/account_management', methods=['GET', 'POST'])
+def account_management():
+    reg_form = RegistrationForm()
+    search_form = UserSearchForm()
+    headings = ['Username', 'User Category', 'Email', '          ']
+    data = User.query.all()
+    if reg_form.validate_on_submit():
+        hashed_pass = bcrypt.generate_password_hash(reg_form.password.data).decode('utf-8')
+        user = User(name=reg_form.name.data, username=reg_form.username.data, email=reg_form.email.data,
+                    address=reg_form.address.data, mobile_no=reg_form.mobile_no.data, course=reg_form.course.data,
+                    password=hashed_pass, user_category=reg_form.user_category.data)
+        db.session.add(user)
+        db.session.commit()
+        return redirect(url_for('register'))
+    return render_template('account_management.html', title='User Accounts Management', form=reg_form, data=data,
+                           search_form=search_form, headings=headings)
+
+
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     reg_form = RegistrationForm()
@@ -47,7 +64,7 @@ def register():
         db.session.add(user)
         db.session.commit()
         return redirect(url_for('register'))
-    return render_template('register.html', title='User Accounts Management', form=reg_form, data=data,
+    return render_template('register.html', title='Account Registration', form=reg_form, data=data,
                            search_form=search_form, headings=headings)
 
 
@@ -56,7 +73,6 @@ def save_assignment(file):
     _, f_ext = os.path.splitext(file.filename)
     file_fn = random_hex + f_ext
     file_path = os.path.join(app.root_path, 'static/assignment_files', file_fn)
-
 
 
 @app.route('/detail_page/<course>/', methods=['GET', 'POST'])

@@ -20,7 +20,7 @@ class RegistrationForm(FlaskForm):
                             render_kw={"placeholder": "0300 0000000"})
     course = SelectField('Course', choices=['Calculas', 'Computer Science', 'Political Studies', 'English',
                                             'Urdu Adab', 'None'])
-    user_category = SelectField('User Category', choices=['Admin', 'Teacher', 'Student'])
+    user_category = SelectField('User Category', choices=['Student', 'Teacher'])
     password = PasswordField('Password', validators=[DataRequired()], render_kw={"placeholder": "Password"})
     confirm_password = PasswordField('Confirm Password',
                                      validators=[DataRequired(), EqualTo('password')],
