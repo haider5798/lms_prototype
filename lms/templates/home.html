@@ -4,7 +4,13 @@
     <div class="jumbotron jumbotron-fluid jumbotron-img">
         <div class="container">
         <h2 class="display-4">{{current_user.name.upper()}}</h2>
-        <p class="lead">Department of Computer Science</p>
+        {% with user_cat = current_user.user_category %}
+        {% if user_cat == 'Teacher' %}
+            <p class="lead">Faculty Department of Computer Science</p>
+        {% else %}
+            <p class="lead">Department of Computer Science</p>
+        {% endif %}
+        {% endwith %}
         </div>
     </div>
     <!--  loop will be here       -->

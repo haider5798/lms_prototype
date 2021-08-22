@@ -82,7 +82,8 @@ def save_assignment(file):
 @app.route('/detail_page/<course>/', methods=['GET', 'POST'])
 def detail_page(course):
     as_form = AssignmentSubmissionForm()
-    headings = ['ID', 'Student Name', '         ']
+    headings = ['Assignment ID', 'Student Name', 'Plagiarism Percentage', '              ', '             ']
+    sheadings = ['Assignment ID', 'Assignment Name', ' Marks Obtained']
     data = Assignment.query.all()
     if as_form.validate_on_submit():
         if as_form.assignment.data:
@@ -93,7 +94,7 @@ def detail_page(course):
             db.session.commit()
             print('Here2')
             return redirect(url_for('detail_page'))
-    return render_template('detail_page.html', form=as_form, course=course, headings=headings, data=data)
+    return render_template('detail_page.html', form=as_form, course=course, headings=headings, data=data, sheadings=sheadings)
 
 
 # @app.route('/about')
