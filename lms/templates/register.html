@@ -95,22 +95,6 @@
                                 {{ form.user_category(class="form-control form-control-lg") }}
                             {% endif %}
                         </div>
-                        {% if form.user_category.data == 'Student'%}
-                            {{ render_field(form.course) }}
-                            <div class="form-group">
-                            {{ form.course.label(class="form-control-label") }}
-                            {% if form.course.errors %}
-                                {{ form.course(class="form-control form-control-lg is-invalid") }}
-                                <div class="invalid-feedback">
-                                    {% for error in form.course.errors %}
-                                        <span>{{ error }}</span>
-                                    {% endfor %}
-                                </div>
-                            {% else %}
-                                {{ form.course(class="form-control form-control-lg") }}
-                            {% endif %}
-                        </div>
-                        {% endif %}
                         <div class="form-group">
                         {{ form.password.label(class="form-control-label") }}
                         {% if form.password.errors %}

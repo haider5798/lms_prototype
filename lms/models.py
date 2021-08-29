@@ -16,7 +16,6 @@ class User(db.Model, UserMixin):
     mobile_no = db.Column(db.String(120), unique=True, nullable=True)
     address = db.Column(db.String(20), unique=False, nullable=True)
     user_category = db.Column(db.String(20), unique=False, nullable=False)
-    course = db.Column(db.String(120), unique=False, nullable=True)
     image_file = db.Column(db.String(20), nullable=False, default='default.jpg')
     password = db.Column(db.String(60), nullable=False)
 
@@ -36,8 +35,41 @@ class User(db.Model, UserMixin):
         return f"User('{self.name}', '{self.user_category}', '{self.email}')"
 
 
-class Assignment(db.Model, UserMixin):
+class AssignmentSubmitted(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     student_username = db.Column(db.String(20), unique=False, nullable=False)
     course = db.Column(db.String(20), unique=False, nullable=False)
+    plag_percentage = db.Column(db.Integer, nullable=True)
     assignment_file = db.Column(db.String(50), nullable=False)
+
+    def __repr__(self):
+        return f"SubmittedAssignment('{self.Course}', '{self.Student_username}', '{self.plag_percentage}')"
+
+
+class NewAssignments(db.Model, UserMixin):
+    id = db.Column(db.Integer, primary_key=True)
+    description = db.Column(db.String(20), unique=False, nullable=False)
+    due_date = db.Column(db.DateTime, nullable=False)
+    course = db.Column(db.String(20), unique=False, nullable=False)
+    assignment_file = db.Column(db.String(50), nullable=False)
+
+    def __repr__(self):
+        return f"NewAssignment('{self.description}', '{self.due_date}')"
+
+
+class Course(db.Model, UserMixin):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(20), unique=True, nullable=False)
+    assigned_to = db.Column(db.String(20), unique=False, nullable=True)
+
+    def __repr__(self):
+        return f"Course('{self.title}', '{self.assigned_to}')"
+
+
+class EnrolledStudent(db.Model, UserMixin):
+    id = db.Column(db.Integer, primary_key=True)
+    course_id = db.Column(db.Integer, unique=True, nullable=False)
+    student_id = db.Column(db.Integer, unique=False, nullable=False)
+
+    def __repr__(self):
+        return f"EnrolledStudent('{self.Course_id}', '{self.student_id}')"

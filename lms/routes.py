@@ -2,13 +2,14 @@ import datetime
 import os
 import secrets
 from PIL import Image
-from flask import (Response, redirect, flash, render_template, url_for, request)
+from flask import (Response, redirect, flash, render_template, url_for, request, session)
 from flask_login import login_user, logout_user, current_user, login_required
 
 from lms import app, bcrypt, db, mail
-from lms.forms import (RegistrationForm, LoginForm, UpdateAccountForm,
-                       UserSearchForm, RequestResetForm, ResetPasswordForm, AssignmentSubmissionForm)
-from lms.models import User, Assignment
+from lms.forms import (RegistrationForm, LoginForm, UpdateAccountForm, CreateNewAssignment, CourseAssigned,
+                       StudentEnrolment, UserSearchForm, RequestResetForm, ResetPasswordForm, AssignmentSubmissionForm,
+                       CreateNewCourse)
+from lms.models import User, AssignmentSubmitted, NewAssignments, Course, EnrolledStudent
 from flask_mail import Message
 
 
@@ -30,17 +31,47 @@ def login():
 @app.route('/home', methods=['GET', 'POST'])
 @login_required
 def home():
-    return render_template('home.html',  title='Home')
+    en_form = CourseAssigned()
+    sen_form = StudentEnrolment()
+    courses = Course.query.all()
+    courses_list = [(i.id, i.title) for i in courses]
+    en_form.title.choices = courses_list
+    # sen_form.title.choices = courses_list
+    if current_user.user_category == 'Teacher':
+        courses = Course.query.filter_by(assigned_to=current_user.username).all()
+        if en_form.validate_on_submit():
+            print(en_form.title.data)
+            course = Course.query.filter_by(id=en_form.title.data).first()
+            print(course)
+            course.assigned_to = current_user.username
+            db.session.flush()
+            db.session.commit()
+            return redirect(url_for('home'))
+    elif current_user.user_category == 'Student':
+        courses = EnrolledStudent.query.filter_by(student_id=current_user.id).all()
+        if sen_form.validate_on_submit():
+            student = EnrolledStudent(course_id=sen_form.title.data, student_id=current_user.id)
+            db.session.add(student)
+            db.session.commit()
+            return redirect(url_for('home'))
+    return render_template('home.html',  title='Home', form=en_form, form2=sen_form, courses=courses)
 
 
 @app.route('/course_management', methods=['GET', 'POST'])
 @login_required
 def course_management():
-    return render_template('course_management.html',  title='Course Management')
+    cc_form = CreateNewCourse()
+    headings = ['Course ID', 'Course Title', 'Assigned To', '        ']
+    courses = Course.query.all()
+    if cc_form.validate_on_submit():
+        course = Course(title=cc_form.title.data)
+        db.session.add(course)
+        db.session.commit()
+        return redirect(url_for('course_management'))
+    return render_template('course_management.html',  title='Course Management', form=cc_form, headings=headings, data=courses)
 
 
 @app.route('/account_management', methods=['GET', 'POST'])
-@login_required
 def account_management():
     reg_form = RegistrationForm()
     search_form = UserSearchForm()
@@ -49,11 +80,12 @@ def account_management():
     if reg_form.validate_on_submit():
         hashed_pass = bcrypt.generate_password_hash(reg_form.password.data).decode('utf-8')
         user = User(name=reg_form.name.data, username=reg_form.username.data, email=reg_form.email.data,
-                    address=reg_form.address.data, mobile_no=reg_form.mobile_no.data, user_category='Admin',
+                    address=reg_form.address.data, mobile_no=reg_form.mobile_no.data, user_category=reg_form.user_category.data,
                     password=hashed_pass)
+
         db.session.add(user)
         db.session.commit()
-        return redirect(url_for('register'))
+        return redirect(url_for('account_management'))
     return render_template('account_management.html', title='User Accounts Management', form=reg_form, data=data,
                            search_form=search_form, headings=headings)
 
@@ -69,7 +101,7 @@ def register():
         db.session.add(user)
         db.session.commit()
         return redirect(url_for('register'))
-    return render_template('register.html', title='Account Registration', form=reg_form)
+    return render_template('register.html', title='Account Registration', form=reg_form, )
 
 
 def save_assignment(file):
@@ -82,19 +114,21 @@ def save_assignment(file):
 @app.route('/detail_page/<course>/', methods=['GET', 'POST'])
 def detail_page(course):
     as_form = AssignmentSubmissionForm()
+    na_form = CreateNewAssignment()
     headings = ['Assignment ID', 'Student Name', 'Plagiarism Percentage', '              ', '             ']
     sheadings = ['Assignment ID', 'Assignment Name', ' Marks Obtained']
-    data = Assignment.query.all()
+    data = AssignmentSubmitted.query.all()
     if as_form.validate_on_submit():
         if as_form.assignment.data:
-            print('Here1')
             save_assignment(as_form.assignment.data)
-            file = Assignment(student_username=current_user.name, course=course, assignment_file=as_form.assignment.data)
+            file = AssignmentSubmitted(student_username=current_user.name, course=course, assignment_file=as_form.assignment.data)
             db.session.add(file)
             db.session.commit()
             print('Here2')
             return redirect(url_for('detail_page'))
-    return render_template('detail_page.html', form=as_form, course=course, headings=headings, data=data, sheadings=sheadings)
+    if na_form.validate_on_submit():
+        return redirect(url_for('detail_page'))
+    return render_template('detail_page.html', form=as_form, form2=na_form, course=course, headings=headings, data=data, sheadings=sheadings)
 
 
 # @app.route('/about')
@@ -146,7 +180,7 @@ def delete(id):
     data = User.query.get(id)
     db.session.delete(data)
     db.session.commit()
-    return redirect(url_for('register'))
+    return redirect(url_for('account_management'))
 
 
 def send_reset_email(user):
@@ -166,7 +200,7 @@ def reset_request():
         return redirect(url_for('home'))
     form = RequestResetForm()
     if form.validate_on_submit():
-        user = form.user_category.data.query.filter_by(email=form.email.data).first()
+        user = User.query.filter_by(email=form.email.data).first()
         send_reset_email(user)
     return render_template('reset_request.html', title='Reset Password', form=form)
 
