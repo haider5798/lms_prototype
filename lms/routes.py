@@ -31,37 +31,40 @@ def login():
 @app.route('/home', methods=['GET', 'POST'])
 @login_required
 def home():
-    en_form = CourseAssigned()
+    ten_form = CourseAssigned()
     sen_form = StudentEnrolment()
     courses = Course.query.all()
     courses_list = [(i.id, i.title) for i in courses]
-    en_form.title.choices = courses_list
-    # sen_form.title.choices = courses_list
+    sen_form.title.choices = courses_list
+    ten_form.title.choices = courses_list
     if current_user.user_category == 'Teacher':
         courses = Course.query.filter_by(assigned_to=current_user.username).all()
-        if en_form.validate_on_submit():
-            print(en_form.title.data)
-            course = Course.query.filter_by(id=en_form.title.data).first()
-            print(course)
+        if ten_form.validate_on_submit():
+            course = Course.query.filter_by(id=ten_form.title.data).first()
             course.assigned_to = current_user.username
             db.session.flush()
             db.session.commit()
             return redirect(url_for('home'))
     elif current_user.user_category == 'Student':
-        courses = EnrolledStudent.query.filter_by(student_id=current_user.id).all()
+        courses = []
+        i = EnrolledStudent.query.filter_by(student_id=current_user.id).all()
+        if i:
+            for j in i:
+                c = Course.query.filter_by(id=j.course_id).first()
+                courses.append(c)
         if sen_form.validate_on_submit():
             student = EnrolledStudent(course_id=sen_form.title.data, student_id=current_user.id)
             db.session.add(student)
             db.session.commit()
             return redirect(url_for('home'))
-    return render_template('home.html',  title='Home', form=en_form, form2=sen_form, courses=courses)
+    return render_template('home.html',  title='Home', form=sen_form, form2=ten_form, courses=courses)
 
 
 @app.route('/course_management', methods=['GET', 'POST'])
 @login_required
 def course_management():
     cc_form = CreateNewCourse()
-    headings = ['Course ID', 'Course Title', 'Assigned To', '        ']
+    headings = ['Course ID', 'Course Title', 'Assigned To', '']
     courses = Course.query.all()
     if cc_form.validate_on_submit():
         course = Course(title=cc_form.title.data)
@@ -175,12 +178,20 @@ def logout():
     return redirect(url_for('login'))
 
 
-@app.route('/delete/<id>/', methods=['GET', 'POST'])
-def delete(id):
+@app.route('/delete_user/<id>/', methods=['GET', 'POST'])
+def delete_user(id):
     data = User.query.get(id)
     db.session.delete(data)
     db.session.commit()
     return redirect(url_for('account_management'))
+
+
+@app.route('/delete_course/<id>/', methods=['GET', 'POST'])
+def delete_course(id):
+    data = Course.query.get(id)
+    db.session.delete(data)
+    db.session.commit()
+    return redirect(url_for('course_management'))
 
 
 def send_reset_email(user):
@@ -189,8 +200,8 @@ def send_reset_email(user):
                   sender='nadeem.haider34603@gmail.com',
                   recipients=[user.email])
     msg.body = f''' To reset you password, Visit the following link:
-{url_for('reset_token', token=token, _external=True)}
-If you did not make any request then ignore this Email.'''
+    {url_for('reset_token', token=token, _external=True)}
+    If you did not make any request then ignore this Email.'''
     mail.send(msg)
 
 

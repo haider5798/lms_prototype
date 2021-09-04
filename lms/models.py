@@ -72,4 +72,4 @@ class EnrolledStudent(db.Model, UserMixin):
     student_id = db.Column(db.Integer, unique=False, nullable=False)
 
     def __repr__(self):
-        return f"EnrolledStudent('{self.Course_id}', '{self.student_id}')"
+        return f"EnrolledStudent('{self.course_id}', '{self.student_id}')"

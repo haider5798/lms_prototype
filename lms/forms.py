@@ -121,7 +121,7 @@ class CreateNewCourse(FlaskForm):
 
 class CourseAssigned(FlaskForm):
     title = SelectField('Course Title', validators=[InputRequired()])
-    submit = SubmitField('Enrol')
+    submit = SubmitField('Enroll')
 
     def validate_assignment(self, title):
         data = Course.query.filter_by(title=title.data).first()
@@ -131,7 +131,7 @@ class CourseAssigned(FlaskForm):
 
 class StudentEnrolment(FlaskForm):
     title = SelectField('Course Title', validators=[InputRequired()])
-    submit = SubmitField('Enrol')
+    submit = SubmitField('Enroll')
 
     def validate_enrolment(self, title):
         data = EnrolledStudent.query.filter_by(title=title.data).all()

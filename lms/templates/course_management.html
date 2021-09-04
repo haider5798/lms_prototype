@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 {% block content %}
 
-<div class="container">
+<div class="container border p-3">
     <div class="jumbotron jumbotron-fluid text-white" style="background-image: url({{ url_for('static', filename='jumbo.jpg')}}); background-size: cover;">
         <div class="container">
             <h2 class="display-4 text-white">Welcome to Course Management Panel!</h2>
@@ -36,7 +36,7 @@
                         <th scope="row">Not Assigned</th>
                     {% endif %}
                     <th scope="row">
-                        <a href="#" class="btn btn-warning btn-xs">Delete</a>
+                        <a href="/delete_course/{{row.id}}/" class="btn btn-warning btn-xs">Delete</a>
                     </th>
                 </tr>
                 {% endfor %}
@@ -47,40 +47,40 @@
 </div>
 <!--    Popup Modal -->
 <div class="modal fade" id="course_create" tabindex="-1" role="dialog" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title">Create New Course</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-        <form method="POST" action="">
-          <div class="modal-body">
-                {{ form.hidden_tag() }}
-                <fieldset class="form-group">
-                    <div class="form-group">
-                      {{ form.title.label(class="form-control-label") }}
-                        {% if form.title.errors %}
-                            {{ form.title(class="form-control form-control-sm is-invalid") }}
-                            <div class="invalid-feedback">
-                                {% for error in form.title.errors %}
-                                    <span>{{ error }}</span>
-                                {% endfor %}
-                            </div>
-                        {% else %}
-                            {{ form.title(class="form-control form-control-sm") }}
-                        {% endif %}
-                    </div>
-                </fieldset>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-            {{ form.submit(class="btn btn-secondary btn-info") }}
-          </div>
-        </form>
-        </div>
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Create New Course</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
       </div>
+    <form method="POST" action="">
+      <div class="modal-body">
+            {{ form.hidden_tag() }}
+            <fieldset class="form-group">
+                <div class="form-group">
+                  {{ form.title.label(class="form-control-label") }}
+                    {% if form.title.errors %}
+                        {{ form.title(class="form-control form-control-sm is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.title.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.title(class="form-control form-control-sm") }}
+                    {% endif %}
+                </div>
+            </fieldset>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        {{ form.submit(class="btn btn-secondary btn-info") }}
+      </div>
+    </form>
     </div>
+  </div>
+</div>
 <!--    end Modal -->
 {% endblock content %}

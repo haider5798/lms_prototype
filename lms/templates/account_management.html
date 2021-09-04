@@ -1,6 +1,6 @@
 {% extends "layout.html" %}
 {% block content %}
-    <div class="container">
+    <div class="container border p-3">
         <br>
         <div class="bg-dark"><h1 class="text-center text-white py-2"> Accounts Management </h1></div>
         <br>
@@ -147,7 +147,7 @@
                     <th scope="row">{{ row.user_category }}</th>
                     <th scope="row">{{ row.email }}</th>
                     <th scope="row">
-                        <a href="/delete/{{row.id}}/" class="btn btn-warning btn-xs">Delete</a>
+                        <a href="/delete_user/{{row.id}}/" class="btn btn-warning btn-xs">Delete</a>
                     </th>
                 </tr>
                 {% endfor %}

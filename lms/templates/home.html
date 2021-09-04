@@ -1,12 +1,12 @@
 {% extends "layout.html" %}
 {% block content %}
-<div class="container">
+<div class="container border p-3">
     <div class="jumbotron jumbotron-fluid text-white " style="background-image: url({{ url_for('static', filename='jumbo.jpg')}}); background-size: cover;">
             <h2 class="display-4 text-white ml-2">{{current_user.name.upper()}}</h2>
             {% with user_cat = current_user.user_category %}
             {% if user_cat == 'Teacher' %}
                 <p class="lead ml-2">Faculty Department of Computer Science</p>
-                <button type="button" class="btn btn-info float-right mr-4" data-toggle="modal" data-target="#course_enrolment">
+                <button type="button" class="btn btn-info float-right mr-4" data-toggle="modal" data-target="#course_assignment">
                   Course Enrollment
                 </button>
             {% elif user_cat == 'Student' %}
@@ -19,96 +19,100 @@
             {% endif %}
             {% endwith %}
         </div>
-    {% with user_category = current_user.user_category %}
-    {% if user_category != 'Admin' %}
-    {% for course in courses %}
-        <div class="card" style="max-width: 18rem;">
-            <div class="card-body">
-              <h5 class="card-title">{{course.title.upper()}}</h5>
-              <a href="/detail_page/{{course.title}}/" class="btn btn-info btn-xs">Details</a>
-            </div>
-        </div>
-    {% endfor %}
-    {% endif %}
-    {% endwith %}
-</div>
-    <!--    Popup Modal for Teacher -->
-    <div class="modal fade" id="course_enrolment" tabindex="-1" role="dialog" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title">Enroll In New Course</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-        <form method="POST" action="">
-          <div class="modal-body">
-                {{ form.hidden_tag() }}
-                <fieldset class="form-group">
-                    <div class="form-group">
-                      {{ form.title.label(class="form-control-label") }}
-                        {% if form.title.errors %}
-                            {{ form.title(class="form-control form-control-lg is-invalid") }}
-                            <div class="invalid-feedback">
-                                {% for error in form.title.errors %}
-                                    <span>{{ error }}</span>
-                                {% endfor %}
-                            </div>
-                        {% else %}
-                            {{ form.title(class="form-control form-control-lg") }}
-                        {% endif %}
+        <div class="card-deck">
+            {% with user_category = current_user.user_category %}
+            {% if user_category != 'Admin' %}
+            {% for course in courses %}
+                <div class="card" style="max-width: 18rem; max-height=auto">
+                    <div class="card-body">
+                      <h5 class="card-title">{{course.title|upper()}}</h5>
+                      {% if user_category == 'Student' %}
+                      <h7 class="card-title">Assigned To: {{course.assigned_to|upper()}}</h7><br><br>
+                      {% endif %}
+                      <a href="/detail_page/{{course.title}}/" class="btn btn-info btn-xs ">Details</a>
                     </div>
-                </fieldset>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-            {{ form.submit(class="btn btn-secondary btn-info") }}
-          </div>
-        </form>
-          </div>
+                </div>
+            {% endfor %}
+            {% endif %}
+            {% endwith %}
         </div>
+
+</div>
+<!--    Popup Modal for Student -->
+<div class="modal fade" id="student_enrolment" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Enroll In New Course</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+    <form method="POST" action="">
+      <div class="modal-body">
+        {{ form.hidden_tag() }}
+        <fieldset class="form-group">
+            <div class="form-group">
+              {{ form.title.label(class="form-control-label") }}
+                {% if form.title.errors %}
+                    {{ form.title(class="form-control form-control-sm is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.title.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{ form.title(class="form-control form-control-sm") }}
+                {% endif %}
+            </div>
+        </fieldset>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        {{ form.submit(class="btn btn-secondary btn-info") }}
+      </div>
+    </form>
       </div>
     </div>
+  </div>
 <!--    end Modal -->
-    <!--    Popup Modal for Student -->
-    <div class="modal fade" id="student_enrolment" tabindex="-1" role="dialog" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title">Enroll In New Course</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-        <form method="POST" action="">
-          <div class="modal-body">
+<!--    Popup Modal for Teacher -->
+<div class="modal fade" id="course_assignment" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Course Assignment</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+    <form method="POST" action="">
+      <div class="modal-body">
             {{ form2.hidden_tag() }}
             <fieldset class="form-group">
                 <div class="form-group">
                   {{ form2.title.label(class="form-control-label") }}
                     {% if form2.title.errors %}
-                        {{ form2.title(class="form-control form-control-lg is-invalid") }}
+                        {{ form2.title(class="form-control form-control-sm is-invalid") }}
                         <div class="invalid-feedback">
                             {% for error in form2.title.errors %}
                                 <span>{{ error }}</span>
                             {% endfor %}
                         </div>
                     {% else %}
-                        {{ form2.title(class="form-control form-control-lg") }}
+                        {{ form2.title(class="form-control form-control-sm") }}
                     {% endif %}
                 </div>
             </fieldset>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-            {{ form.submit(class="btn btn-secondary btn-info") }}
-          </div>
-        </form>
-          </div>
-        </div>
       </div>
-    </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        {{ form2.submit(class="btn btn-secondary btn-info") }}
+      </div>
+    </form>
+      </div>
+  </div>
+</div>
 <!--    end Modal -->
 </div>
 {% endblock content %}
