@@ -1,4 +1,3 @@
-import datetime
 import os
 import secrets
 from PIL import Image
@@ -11,6 +10,7 @@ from lms.forms import (RegistrationForm, LoginForm, UpdateAccountForm, CreateNew
                        CreateNewCourse)
 from lms.models import User, AssignmentSubmitted, NewAssignments, Course, EnrolledStudent
 from flask_mail import Message
+from lms import ALLOWED_EXTENSIONS
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -75,6 +75,7 @@ def course_management():
 
 
 @app.route('/account_management', methods=['GET', 'POST'])
+@login_required
 def account_management():
     reg_form = RegistrationForm()
     search_form = UserSearchForm()
@@ -107,41 +108,54 @@ def register():
     return render_template('register.html', title='Account Registration', form=reg_form, )
 
 
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+
 def save_assignment(file):
     random_hex = secrets.token_hex()
     _, f_ext = os.path.splitext(file.filename)
-    file_fn = random_hex + f_ext
-    file_path = os.path.join(app.root_path, 'static/assignment_files', file_fn)
+    assignment_fn = random_hex + f_ext
+    assignment_path = os.path.join(app.root_path, 'static/assignments', assignment_fn)
+    file.save(assignment_path)
+    return assignment_fn
 
 
 @app.route('/detail_page/<course>/', methods=['GET', 'POST'])
+@login_required
 def detail_page(course):
     as_form = AssignmentSubmissionForm()
     na_form = CreateNewAssignment()
-    headings = ['Assignment ID', 'Student Name', 'Plagiarism Percentage', '              ', '             ']
-    sheadings = ['Assignment ID', 'Assignment Name', ' Marks Obtained']
+    headings = ['Assignment ID', 'Student Name', 'Plagiarism Percentage', '', '']
+    sheadings = ['Assignment ID', 'Title', ' Due Date', 'Marks Obtained', '']
     assignments = NewAssignments.query.filter_by(course=course).all()
     assignments_list = [(i.id, i.description)for i in assignments]
     as_form.assignment.choices = assignments_list
-    data = AssignmentSubmitted.query.all()
-    if as_form.validate_on_submit():
-        if as_form.assignment.data:
-            save_assignment(as_form.assignment.data)
-            file = AssignmentSubmitted(student_username=current_user.name, course=course, assignment_file=as_form.assignment.data)
+    data = AssignmentSubmitted.query.filter_by(course=course).all()
+    data2 = NewAssignments.query.filter_by(course=course).all()
+    if current_user.user_category == 'Student':
+        if as_form.validate_on_submit():
+            file_name = save_assignment(as_form.assignment_file.data)
+            file = AssignmentSubmitted(student_username=current_user.name, course=course, assignment_file=file_name)
             db.session.add(file)
             db.session.commit()
-            print('Here2')
-            return redirect(url_for('detail_page'))
-    if na_form.validate_on_submit():
-        return redirect(url_for('detail_page'))
-    return render_template('detail_page.html', form=as_form, form2=na_form, course=course, headings=headings, data=data, sheadings=sheadings)
+            return redirect(url_for('detail_page', course=course))
+    if current_user.user_category == 'Teacher':
+        if na_form.validate_on_submit():
+            if na_form.assignment_file.data:
+                file_name = save_assignment(na_form.assignment_file.data)
+                file = NewAssignments(description=na_form.description.data, due_date=na_form.due_date.data, course=course, assignment_file=file_name)
+                db.session.add(file)
+                db.session.commit()
+                return redirect(url_for('detail_page', course=course))
+    return render_template('detail_page.html', form=as_form, form2=na_form, course=course, headings=headings, data=data, data2=data2, sheadings=sheadings)
 
 
 # @app.route('/about')
 # @login_required
 # def about():
 #     return render_template('about.html', title='About')
-
 
 def save_picture(form_picture):
     random_hex = secrets.token_hex()

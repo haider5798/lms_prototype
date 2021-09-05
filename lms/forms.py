@@ -5,6 +5,7 @@ from wtforms import StringField, PasswordField, SubmitField, BooleanField, Selec
 from wtforms.validators import DataRequired, Length, EqualTo, Email, ValidationError, InputRequired
 from lms.models import User, AssignmentSubmitted, NewAssignments, Course, EnrolledStudent
 from wtforms.fields.html5 import DateField
+from lms import ALLOWED_EXTENSIONS
 
 
 class RegistrationForm(FlaskForm):
@@ -99,7 +100,7 @@ class ResetPasswordForm(FlaskForm):
 
 class AssignmentSubmissionForm(FlaskForm):
     assignment = SelectField('Assignment Title', validators=[InputRequired()])
-    assignment_file = FileField('Select Assignment File', validators=[FileAllowed(['pdf', 'docx'])])
+    assignment_file = FileField('Select Assignment File', validators=[FileAllowed(ALLOWED_EXTENSIONS)])
     submit = SubmitField('Upload')
 
     def validate_submission(self):
@@ -110,8 +111,8 @@ class AssignmentSubmissionForm(FlaskForm):
 
 class CreateNewAssignment(FlaskForm):
     description = StringField('Title', validators=[DataRequired(), Length(min=5, max=50)])
-    due_date = DateField('Due Date', format='%YY-%mm-%dd', validators=[DataRequired()], render_kw={"placeholder": "Select Due Date"})
-    assignment_file = FileField('File', validators=[FileAllowed(['pdf', 'docx'])])
+    due_date = DateField('Due Date', format='%Y-%m-%d', validators=[DataRequired()])
+    assignment_file = FileField('File', validators=[FileAllowed(ALLOWED_EXTENSIONS)])
     submit = SubmitField('Post Assignment')
 
 

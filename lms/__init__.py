@@ -4,6 +4,9 @@ from flask_bcrypt import Bcrypt
 from flask_login import LoginManager
 from flask_mail import Mail
 
+UPLOAD_FOLDER = 'static/assignments'
+ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
+
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'idontgiveashit'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
@@ -19,6 +22,7 @@ app.config['MAIL_USE_TLS'] = True
 # app.config['MAIL_PASSWORD'] = os.environ.get('EMAIL_PASS')
 app.config['MAIL_USERNAME'] = 'example@gmail.com'
 app.config['MAIL_PASSWORD'] = 'password'
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 mail = Mail(app)
 
 from lms import routes

@@ -14,7 +14,7 @@
             {% endif %}
         {% endwith %}
     </div>
-<!--    Popup Modal -->
+<!--    Popup Modal New Assignment -->
     <div class="modal fade" id="create_new_assignment" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
@@ -24,7 +24,7 @@
               <span aria-hidden="true">&times;</span>
             </button>
           </div>
-        <form method="POST" action="">
+        <form method="POST" action="" enctype="multipart/form-data">
           <div class="modal-body" >
               {{ form.csrt_token }}
                 {{ form2.hidden_tag() }}
@@ -44,11 +44,25 @@
                     </div>
                 <div class="form-group">
                     {{ form2.due_date.label(class="form-control-label") }}
+                        {% if form2.due_date.errors %}
+                        {{ form2.due_date(class="form-control form-control-sm is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form2.due_date.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                        {% else %}
                     {{ form2.due_date(class="datepicker form-control form-control-sm") }}
+                    {% endif %}
                 </div>
                  <div class="form-group">
-                    {{ form2.assignment_file.label(class="form-control-label")}}
-                     {{ form2.assignment_file(class="form-control-file form-control form-control-sm") }}
+                    {{ form2.assignment_file.label(class="form-control-label") }}
+                    {{ form2.assignment_file(class="form-control-file") }}
+                    {% if form2.assignment_file.errors %}
+                        {% for error in form2.assignment_file.errors %}
+                            <span class="text-danger">{{ error }}</span></br>
+                        {% endfor %}
+                    {% endif %}
                 </div>
                 </fieldset>
           </div>
@@ -64,78 +78,76 @@
    {%  with user_category = current_user.user_category %}
     {% if user_category == 'Student' %}
     <div class="row">
-        <div class="col-8">
+        <div class="col-9">
             <div class="card">
                 <div class="card-header font-weight-bold">
-                Assignments Detail
-            </div>
+                    Assignments Detail
+                </div>
                 <div class="card-body text-center">
-                <table class="table table-hover table-striped">
-              <thead>
-                <tr>
-                    {% for heading in sheadings %}
-                  <th scope="col">{{ heading }}</th>
-                    {% endfor %}
-                </tr>
-              </thead>
-                <tbody>
-                {% for row in data %}
-                <tr>
-                    <th scope="row">{{ row.id }}</th>
-                    <th scope="row">{{ row.student_username }}</th>
-                    <th scope="row">
-                        <a href="#" class="btn btn-warning btn-xs">Open</a>
-                    </th>
-                </tr>
-                {% endfor %}
-                </tbody>
-        </table>
-            </div>
+                    <table class="table table-hover table-striped">
+                        <thead>
+                            <tr>
+                                {% for heading in sheadings %}
+                              <th scope="col">{{ heading }}</th>
+                                {% endfor %}
+                            </tr>
+                          </thead>
+                        <tbody>
+                        {% for row in data2 %}
+                        <tr>
+                            <th scope="row">{{ row.id }}</th>
+                            <th scope="row">{{ row.description }}</th>
+                            <th scope="row">{{ row.due_date }}</th>
+                            <th scope="row">Not Marked</th>
+                            <th scope="row">
+                                <a href="#" class="btn btn-warning btn-xs">Download</a>
+                            </th>
+                        </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
-        <div class="col-4">
-        <div class="card">
-          <div class="card-header font-weight-bold">
-            Submit Assignment
-          </div>
-          <div class="card-body">
-            <form method="POST" action="">
-                {{ form.hidden_tag() }}
-                <fieldset class="form-group">
-                    <div class="form-group">
-                        {{ form.assignment.label(class="form-control-label") }}
-                        {% if form.assignment.errors %}
-                            {{ form.assignment(class="form-control form-control-sm is-invalid") }}
-                        <div class="invalid-feedback">
-                            {% for error in form.assignment.errors %}
-                                <span>{{ error }}</span>
-                            {% endfor %}
-                        </div>
-                    {% else %}
-                        {{ form.assignment(class="form-control form-control-sm") }}
-                    {% endif %}
-                </div>
-                <div class="form-group">
-                    {{ form.assignment_file.label(class="form-control-label") }}
-                    {% if form.assignment_file.errors %}
-                        {{ form.assignment_file(class="form-control form-control-sm is-invalid") }}
-                    <div class="invalid-feedback">
-                        {% for error in form.assignment_file.errors %}
-                            <span>{{ error }}</span>
-                        {% endfor %}
+        <div class="col-3">
+            <div class="card">
+              <div class="card-header font-weight-bold">
+                Submit Assignment
+              </div>
+              <div class="card-body">
+                <form method="POST" action="" enctype="multipart/form-data">
+                    {{ form.hidden_tag() }}
+                    <fieldset class="form-group">
+                        <div class="form-group">
+                            {{ form.assignment.label(class="form-control-label") }}
+                            {% if form.assignment.errors %}
+                                {{ form.assignment(class="form-control form-control-sm is-invalid") }}
+                            <div class="invalid-feedback">
+                                {% for error in form.assignment.errors %}
+                                    <span>{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form.assignment(class="form-control form-control-sm") }}
+                        {% endif %}
                     </div>
-                    {% else %}
-                        {{ form.assignment_file(class="form-control form-control-sm") }}
-                    {% endif %}
+                        <div class="form-group">
+                        {{ form.assignment_file.label(class="form-control-label") }}
+                        {{ form.assignment_file(class="form-control-file") }}
+                        {% if form.assignment_file.errors %}
+                            {% for error in form.assignment_file.errors %}
+                                <span class="text-danger">{{ error }}</span></br>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                    </fieldset>
+                    <div class="form-group text-center">
+                    {{ form.submit(class="btn btn-info") }}
                 </div>
-                </fieldset>
-                <div class="form-group text-center">
-                {{ form.submit(class="btn btn-info") }}
+              </form>
+              </div>
             </div>
-          </form>
-          </div>
-    </div>
-    </div>
+        </div>
     </div>
     <br>
     {% elif user_category == 'Teacher' %}
