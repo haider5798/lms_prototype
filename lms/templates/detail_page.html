@@ -18,14 +18,14 @@
     <div class="modal fade" id="create_new_assignment" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
-          <div class="modal-header">
+          <div class="modal-header " >
             <h5 class="modal-title">Create New Assignment</h5>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
               <span aria-hidden="true">&times;</span>
             </button>
           </div>
         <form method="POST" action="">
-          <div class="modal-body">
+          <div class="modal-body" >
               {{ form.csrt_token }}
                 {{ form2.hidden_tag() }}
                 <fieldset class="form-group">
@@ -43,11 +43,12 @@
                         {% endif %}
                     </div>
                 <div class="form-group">
-                    {{ form2.due_date.label(class="form-control-label") }}{{form2.hidden_tag()}}
-                    {{ form2.due_date(class="datepicker") }}{{form2.hidden_tag()}}
+                    {{ form2.due_date.label(class="form-control-label") }}
+                    {{ form2.due_date(class="datepicker form-control form-control-sm") }}
                 </div>
                  <div class="form-group">
-                    {{ form2.assignment_file.label()}}{{ form2.assignment_file(class="form-control-file") }}
+                    {{ form2.assignment_file.label(class="form-control-label")}}
+                     {{ form2.assignment_file(class="form-control-file form-control form-control-sm") }}
                 </div>
                 </fieldset>
           </div>
@@ -95,7 +96,7 @@
         <div class="col-4">
         <div class="card">
           <div class="card-header font-weight-bold">
-            File Upload
+            Submit Assignment
           </div>
           <div class="card-body">
             <form method="POST" action="">
@@ -104,14 +105,27 @@
                     <div class="form-group">
                         {{ form.assignment.label(class="form-control-label") }}
                         {% if form.assignment.errors %}
-                            {{ form.assignment(class="form-control form-control-lg is-invalid") }}
+                            {{ form.assignment(class="form-control form-control-sm is-invalid") }}
                         <div class="invalid-feedback">
                             {% for error in form.assignment.errors %}
                                 <span>{{ error }}</span>
                             {% endfor %}
                         </div>
                     {% else %}
-                        {{ form.assignment(class="form-control form-control-lg") }}
+                        {{ form.assignment(class="form-control form-control-sm") }}
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    {{ form.assignment_file.label(class="form-control-label") }}
+                    {% if form.assignment_file.errors %}
+                        {{ form.assignment_file(class="form-control form-control-sm is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.assignment_file.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                        {{ form.assignment_file(class="form-control form-control-sm") }}
                     {% endif %}
                 </div>
                 </fieldset>
@@ -127,7 +141,7 @@
     {% elif user_category == 'Teacher' %}
         <div class="card mt-4">
             <div class="card-header font-weight-bold">
-                Student Assignment Detail
+                Student Assignment Details
             </div>
             <div class="card-body text-center">
                 <div class="table-responsive">
@@ -144,7 +158,6 @@
                             <tr>
                                 <th scope="row">{{ row.id }}</th>
                                 <th scope="row">{{ row.student_username }}</th>
-<!--                                <th scope="row">{{ row.plagiarism_per }}</th>-->
                                 <th scope="row">
                                     <a href="#" class="btn btn-warning btn-xs">Check Plagiarism</a>
                                 </th>
@@ -158,16 +171,6 @@
                 </div>
             </div>
         </div>
-
-<!--        <div class="card">-->
-<!--        <div class="card-header font-weight-bold">-->
-<!--            Plagiarism Details-->
-<!--        </div>-->
-<!--        <div class="card-body text-center">-->
-<!--            <p class="card-text"> Plagiarism Found: 0%</p>-->
-<!--            <a href="#" class="btn btn-primary">Submit Assignment</a>-->
-<!--        </div>-->
-<!--    </div>-->
     {% endif %}
     {% endwith %}
 </div>

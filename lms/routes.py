@@ -120,6 +120,9 @@ def detail_page(course):
     na_form = CreateNewAssignment()
     headings = ['Assignment ID', 'Student Name', 'Plagiarism Percentage', '              ', '             ']
     sheadings = ['Assignment ID', 'Assignment Name', ' Marks Obtained']
+    assignments = NewAssignments.query.filter_by(course=course).all()
+    assignments_list = [(i.id, i.description)for i in assignments]
+    as_form.assignment.choices = assignments_list
     data = AssignmentSubmitted.query.all()
     if as_form.validate_on_submit():
         if as_form.assignment.data:

@@ -98,7 +98,8 @@ class ResetPasswordForm(FlaskForm):
 
 
 class AssignmentSubmissionForm(FlaskForm):
-    assignment = FileField('Select Assignment File', validators=[FileAllowed(['pdf', 'docx'])])
+    assignment = SelectField('Assignment Title', validators=[InputRequired()])
+    assignment_file = FileField('Select Assignment File', validators=[FileAllowed(['pdf', 'docx'])])
     submit = SubmitField('Upload')
 
     def validate_submission(self):
@@ -109,7 +110,7 @@ class AssignmentSubmissionForm(FlaskForm):
 
 class CreateNewAssignment(FlaskForm):
     description = StringField('Title', validators=[DataRequired(), Length(min=5, max=50)])
-    due_date = DateField('Due Date', format='%YY-%mm-%dd', validators=[DataRequired()])
+    due_date = DateField('Due Date', format='%YY-%mm-%dd', validators=[DataRequired()], render_kw={"placeholder": "Select Due Date"})
     assignment_file = FileField('File', validators=[FileAllowed(['pdf', 'docx'])])
     submit = SubmitField('Post Assignment')
 
