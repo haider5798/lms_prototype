@@ -37,6 +37,12 @@ def home():
     courses_list = [(i.id, i.title) for i in courses]
     sen_form.title.choices = courses_list
     ten_form.title.choices = courses_list
+    if current_user.user_category == 'Admin':
+        total_students = User.query.filter_by(user_category='Student').count()
+        total_teachers = User.query.filter_by(user_category='Teacher').count()
+        total_courses = Course.query.count()
+        sum_details = {'Courses': total_courses, 'Students': total_students, 'Teachers': total_teachers}
+
     if current_user.user_category == 'Teacher':
         courses = Course.query.filter_by(assigned_to=current_user.username).all()
         if ten_form.validate_on_submit():
@@ -57,7 +63,7 @@ def home():
             db.session.add(student)
             db.session.commit()
             return redirect(url_for('home'))
-    return render_template('home.html',  title='Home', form=sen_form, form2=ten_form, courses=courses)
+    return render_template('home.html', title='Home', form=sen_form, form2=ten_form, courses=courses, sum_details=sum_details)
 
 
 @app.route('/course_management', methods=['GET', 'POST'])
@@ -71,7 +77,8 @@ def course_management():
         db.session.add(course)
         db.session.commit()
         return redirect(url_for('course_management'))
-    return render_template('course_management.html',  title='Course Management', form=cc_form, headings=headings, data=courses)
+    return render_template('course_management.html', title='Course Management', form=cc_form, headings=headings,
+                           data=courses)
 
 
 @app.route('/account_management', methods=['GET', 'POST'])
@@ -79,12 +86,13 @@ def course_management():
 def account_management():
     reg_form = RegistrationForm()
     search_form = UserSearchForm()
-    headings = ['Username', 'User Category', 'Email', '          ']
+    headings = ['Username', 'User Category', 'Email', '']
     data = User.query.all()
     if reg_form.validate_on_submit():
         hashed_pass = bcrypt.generate_password_hash(reg_form.password.data).decode('utf-8')
         user = User(name=reg_form.name.data, username=reg_form.username.data, email=reg_form.email.data,
-                    address=reg_form.address.data, mobile_no=reg_form.mobile_no.data, user_category=reg_form.user_category.data,
+                    address=reg_form.address.data, mobile_no=reg_form.mobile_no.data,
+                    user_category=reg_form.user_category.data,
                     password=hashed_pass)
 
         db.session.add(user)
@@ -130,7 +138,7 @@ def detail_page(course):
     headings = ['Assignment ID', 'Student Name', 'Plagiarism Percentage', '', '']
     sheadings = ['Assignment ID', 'Title', ' Due Date', 'Marks Obtained', '']
     assignments = NewAssignments.query.filter_by(course=course).all()
-    assignments_list = [(i.id, i.description)for i in assignments]
+    assignments_list = [(i.id, i.description) for i in assignments]
     as_form.assignment.choices = assignments_list
     data = AssignmentSubmitted.query.filter_by(course=course).all()
     data2 = NewAssignments.query.filter_by(course=course).all()
@@ -145,11 +153,13 @@ def detail_page(course):
         if na_form.validate_on_submit():
             if na_form.assignment_file.data:
                 file_name = save_assignment(na_form.assignment_file.data)
-                file = NewAssignments(description=na_form.description.data, due_date=na_form.due_date.data, course=course, assignment_file=file_name)
+                file = NewAssignments(description=na_form.description.data, due_date=na_form.due_date.data,
+                                      course=course, assignment_file=file_name)
                 db.session.add(file)
                 db.session.commit()
                 return redirect(url_for('detail_page', course=course))
-    return render_template('detail_page.html', form=as_form, form2=na_form, course=course, headings=headings, data=data, data2=data2, sheadings=sheadings)
+    return render_template('detail_page.html', form=as_form, form2=na_form, course=course, headings=headings, data=data,
+                           data2=data2, sheadings=sheadings)
 
 
 # @app.route('/about')
