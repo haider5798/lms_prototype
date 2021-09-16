@@ -37,6 +37,7 @@ def home():
     courses_list = [(i.id, i.title) for i in courses]
     sen_form.title.choices = courses_list
     ten_form.title.choices = courses_list
+    sum_details = {}
     if current_user.user_category == 'Admin':
         total_students = User.query.filter_by(user_category='Student').count()
         total_teachers = User.query.filter_by(user_category='Teacher').count()
@@ -112,7 +113,7 @@ def register():
                     password=hashed_pass, user_category=reg_form.user_category.data)
         db.session.add(user)
         db.session.commit()
-        return redirect(url_for('register'))
+        return redirect(url_for('login'))
     return render_template('register.html', title='Account Registration', form=reg_form, )
 
 
@@ -135,7 +136,7 @@ def save_assignment(file):
 def detail_page(course):
     as_form = AssignmentSubmissionForm()
     na_form = CreateNewAssignment()
-    headings = ['Assignment ID', 'Student Name', 'Plagiarism Percentage', '', '']
+    headings = ['Assignment ID', 'Student Name', 'Plagiarism Percentage', 'Marks', '']
     sheadings = ['Assignment ID', 'Title', ' Due Date', 'Marks Obtained', '']
     assignments = NewAssignments.query.filter_by(course=course).all()
     assignments_list = [(i.id, i.description) for i in assignments]

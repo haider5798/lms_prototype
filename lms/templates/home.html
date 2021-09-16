@@ -23,7 +23,8 @@
         {% if user_category != 'Admin' %}
         <div class="card-deck">
             {% for course in courses %}
-                <div class="card" style="max-width: 18rem; max-height=auto">
+                <div class="card" style="max-width: 22rem; max-height=auto">
+                    <div class="card-header">Department of Computer Science</div>
                     <div class="card-body">
                       <h5 class="card-title">{{course.title|upper()}}</h5>
                       {% if user_category == 'Student' %}

@@ -40,6 +40,7 @@ class AssignmentSubmitted(db.Model, UserMixin):
     student_username = db.Column(db.String(20), unique=False, nullable=False)
     course = db.Column(db.String(20), unique=False, nullable=False)
     plag_percentage = db.Column(db.Integer, nullable=True)
+    marks_obt = db.Column(db.Integer, nullable=True)
     assignment_file = db.Column(db.String(50), nullable=False)
 
     def __repr__(self):

@@ -98,7 +98,11 @@
                             <th scope="row">{{ row.id }}</th>
                             <th scope="row">{{ row.description }}</th>
                             <th scope="row">{{ row.due_date }}</th>
-                            <th scope="row">Not Marked</th>
+                            {% for i in data if i.student_username==current_user.username %}
+                                <th scope="row">{{ i.marks_obt }}</th>
+                            {% else %}
+                                <th scope="row">Not Marked</th>
+                            {% endfor %}
                             <th scope="row">
                                 <a href="#" class="btn btn-warning btn-xs">Download</a>
                             </th>
@@ -173,6 +177,11 @@
                                 <th scope="row">
                                     <a href="#" class="btn btn-warning btn-xs">Check Plagiarism</a>
                                 </th>
+                                {% if row.marks_obt is none %}
+                                    <th scope="row"><a href="#" class="btn btn-warning btn-xs">Enter Marks</a></th>
+                                {% elif row.marks_obt is not none %}
+                                    <th scope="row">{{ row.marks_obt }}</th>
+                                {% endif %}
                                 <th scope="row">
                                     <a href="#" class="btn btn-warning btn-xs">View File</a>
                                 </th>
