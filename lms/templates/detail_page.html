@@ -68,7 +68,7 @@
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-            {{ form2.submit(class="btn btn-info") }}
+            {{ form2.create_assignment(class="btn btn-info") }}
           </div>
         </form>
         </div>
@@ -178,7 +178,12 @@
                                     <a href="#" class="btn btn-warning btn-xs">Check Plagiarism</a>
                                 </th>
                                 {% if row.marks_obt is none %}
-                                    <th scope="row"><a href="#" class="btn btn-warning btn-xs">Enter Marks</a></th>
+                                    <th scope="row">
+                                        <button type="button" class="btn btn-warning btn-xs" data-toggle="modal" data-target="#Mark_assignment{{ row.id }}">
+                                          Enter Marks
+                                        </button>
+                                    </th>
+<!--                                    <th scope="row"><a href="#" class="btn btn-warning btn-xs">Enter Marks</a></th>-->
                                 {% elif row.marks_obt is not none %}
                                     <th scope="row">{{ row.marks_obt }}</th>
                                 {% endif %}
@@ -195,8 +200,61 @@
     {% endif %}
     {% endwith %}
 </div>
+<!--    Popup Modal Marks Entry -->
+{% for row in data %}
+    <div class="modal fade" id="Mark_assignment{{ row.id }}" tabindex="-1" role="dialog" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="modal-header bg-light" >
+            <h5 class="modal-title">Marks Entry</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+        <form method="POST" action="" enctype="multipart/form-data">
+            {{ meform.csrt_token }}
+            {{ meform.hidden_tag() }}
+          <div class="modal-body" >
+                <fieldset class="form-group">
+                    <div class="form-group">
+                        {{ meform.assignment_id.label(class="form-control-label d-none") }}
+                            {% if meform.assignment_id.errors %}
+                            {{ meform.assignment_id(class="form-control form-control-sm is-invalid") }}
+                            <div class="invalid-feedback">
+                                {% for error in meform.assignment_id.errors %}
+                                    <span>{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                            {% else %}
+                        {{ meform.assignment_id(class="form-control form-control-sm d-none", value=row.id, readonly=True ) }}
+                        {% endif %}
+                    </div>
+                    <div class="form-group">
+                      {{ meform.marks.label(class="form-control-label") }}
+                        {% if meform.marks.errors %}
+                            {{ meform.marks(class="form-control form-control-sm is-invalid") }}
+                            <div class="invalid-feedback">
+                                {% for error in meform.marks.errors %}
+                                    <span>{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ meform.marks(class="form-control form-control-sm") }}
+                        {% endif %}
+                    </div>
+                </fieldset>
+          </div>
+          <div class="modal-footer bg-light">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            {{ meform.submit_marks(class="btn btn-warning") }}
+          </div>
+        </form>
+        </div>
+      </div>
+    </div>
+{% endfor %}
+<!--    end Modal -->
 {% endblock content %}
-
 
 
 

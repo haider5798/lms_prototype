@@ -1,7 +1,7 @@
 from flask_login import current_user
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileAllowed, FileField
-from wtforms import StringField, PasswordField, SubmitField, BooleanField, SelectField
+from wtforms import StringField, PasswordField, SubmitField, BooleanField, SelectField, IntegerField
 from wtforms.validators import DataRequired, Length, EqualTo, Email, ValidationError, InputRequired
 from lms.models import User, AssignmentSubmitted, NewAssignments, Course, EnrolledStudent
 from wtforms.fields.html5 import DateField
@@ -25,7 +25,7 @@ class RegistrationForm(FlaskForm):
     confirm_password = PasswordField('Confirm Password',
                                      validators=[DataRequired(), EqualTo('password')],
                                      render_kw={"placeholder": "Confirm Password"})
-    submit = SubmitField('Register')
+    register = SubmitField('Register')
 
     @staticmethod
     def validate_username(self, username):
@@ -51,7 +51,7 @@ class LoginForm(FlaskForm):
                            validators=[DataRequired(), Length(min=2, max=20)], render_kw={"placeholder": "Jhonny"})
     password = PasswordField('Password', validators=[DataRequired()], render_kw={"placeholder": "Password"})
     remember = BooleanField('Remember Me')
-    submit = SubmitField('Login')
+    login = SubmitField('Login')
 
 
 class UserSearchForm(FlaskForm):
@@ -101,7 +101,7 @@ class ResetPasswordForm(FlaskForm):
 class AssignmentSubmissionForm(FlaskForm):
     assignment = SelectField('Assignment Title', validators=[InputRequired()])
     assignment_file = FileField('Select Assignment File', validators=[FileAllowed(ALLOWED_EXTENSIONS)])
-    submit = SubmitField('Upload')
+    upload_assignment = SubmitField('Upload')
 
     def validate_submission(self):
         user = AssignmentSubmitted.query.filter_by(username=current_user.username).first()
@@ -109,21 +109,21 @@ class AssignmentSubmissionForm(FlaskForm):
             raise ValidationError('Assignment has already been submitted.')
 
 
-class CreateNewAssignment(FlaskForm):
+class CreateNewAssignmentForm(FlaskForm):
     description = StringField('Title', validators=[DataRequired(), Length(min=5, max=50)])
     due_date = DateField('Due Date', format='%Y-%m-%d', validators=[DataRequired()])
     assignment_file = FileField('File', validators=[FileAllowed(ALLOWED_EXTENSIONS)])
-    submit = SubmitField('Post Assignment')
+    create_assignment = SubmitField('Post Assignment')
 
 
-class CreateNewCourse(FlaskForm):
+class CreateNewCourseForm(FlaskForm):
     title = StringField('Course Title', validators=[DataRequired(), Length(min=5, max=20)])
-    submit = SubmitField('Create')
+    create_course = SubmitField('Create')
 
 
-class CourseAssigned(FlaskForm):
+class CourseAssignedForm(FlaskForm):
     title = SelectField('Course Title', validators=[InputRequired()])
-    submit = SubmitField('Enroll')
+    assign_course = SubmitField('Enroll')
 
     def validate_assignment(self, title):
         data = Course.query.filter_by(title=title.data).first()
@@ -131,12 +131,18 @@ class CourseAssigned(FlaskForm):
             raise ValidationError('Course has already been Assigned.')
 
 
-class StudentEnrolment(FlaskForm):
+class StudentEnrolmentForm(FlaskForm):
     title = SelectField('Course Title', validators=[InputRequired()])
-    submit = SubmitField('Enroll')
+    enroll_student = SubmitField('Enroll')
 
     def validate_enrolment(self, title):
         data = EnrolledStudent.query.filter_by(title=title.data).all()
         for d in data:
             if d.student_id == current_user.id:
                 raise ValidationError('Already Enrolled in this Course.')
+
+
+class MarksEntryForm(FlaskForm):
+    assignment_id = StringField('Assignment ID', validators=[DataRequired()])
+    marks = IntegerField('Enter Marks', validators=[InputRequired()])
+    submit_marks = SubmitField('Submit')

@@ -5,9 +5,10 @@ from flask import (Response, redirect, flash, render_template, url_for, request,
 from flask_login import login_user, logout_user, current_user, login_required
 
 from lms import app, bcrypt, db, mail
-from lms.forms import (RegistrationForm, LoginForm, UpdateAccountForm, CreateNewAssignment, CourseAssigned,
-                       StudentEnrolment, UserSearchForm, RequestResetForm, ResetPasswordForm, AssignmentSubmissionForm,
-                       CreateNewCourse)
+from lms.forms import (RegistrationForm, LoginForm, UpdateAccountForm, CreateNewAssignmentForm, CourseAssignedForm,
+                       StudentEnrolmentForm, UserSearchForm, RequestResetForm, ResetPasswordForm,
+                       AssignmentSubmissionForm,
+                       CreateNewCourseForm, MarksEntryForm)
 from lms.models import User, AssignmentSubmitted, NewAssignments, Course, EnrolledStudent
 from flask_mail import Message
 from lms import ALLOWED_EXTENSIONS
@@ -31,8 +32,8 @@ def login():
 @app.route('/home', methods=['GET', 'POST'])
 @login_required
 def home():
-    ten_form = CourseAssigned()
-    sen_form = StudentEnrolment()
+    ten_form = CourseAssignedForm()
+    sen_form = StudentEnrolmentForm()
     courses = Course.query.all()
     courses_list = [(i.id, i.title) for i in courses]
     sen_form.title.choices = courses_list
@@ -64,13 +65,14 @@ def home():
             db.session.add(student)
             db.session.commit()
             return redirect(url_for('home'))
-    return render_template('home.html', title='Home', form=sen_form, form2=ten_form, courses=courses, sum_details=sum_details)
+    return render_template('home.html', title='Home', form=sen_form, form2=ten_form, courses=courses,
+                           sum_details=sum_details)
 
 
 @app.route('/course_management', methods=['GET', 'POST'])
 @login_required
 def course_management():
-    cc_form = CreateNewCourse()
+    cc_form = CreateNewCourseForm()
     headings = ['Course ID', 'Course Title', 'Assigned To', '']
     courses = Course.query.all()
     if cc_form.validate_on_submit():
@@ -100,7 +102,7 @@ def account_management():
         db.session.commit()
         return redirect(url_for('account_management'))
     return render_template('account_management.html', title='User Accounts Management', form=reg_form, data=data,
-                           search_form=search_form, headings=headings)
+                           headings=headings)
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -135,7 +137,8 @@ def save_assignment(file):
 @login_required
 def detail_page(course):
     as_form = AssignmentSubmissionForm()
-    na_form = CreateNewAssignment()
+    na_form = CreateNewAssignmentForm()
+    me_form = MarksEntryForm()
     headings = ['Assignment ID', 'Student Name', 'Plagiarism Percentage', 'Marks', '']
     sheadings = ['Assignment ID', 'Title', ' Due Date', 'Marks Obtained', '']
     assignments = NewAssignments.query.filter_by(course=course).all()
@@ -159,8 +162,14 @@ def detail_page(course):
                 db.session.add(file)
                 db.session.commit()
                 return redirect(url_for('detail_page', course=course))
-    return render_template('detail_page.html', form=as_form, form2=na_form, course=course, headings=headings, data=data,
-                           data2=data2, sheadings=sheadings)
+        elif me_form.validate_on_submit():
+            assignment = AssignmentSubmitted.query.filter_by(id=me_form.assignment_id.data).first()
+            assignment.marks_obt = me_form.marks.data
+            db.session.flush()
+            db.session.commit()
+            return redirect(url_for('detail_page', course=course))
+    return render_template('detail_page.html', form=as_form, form2=na_form, meform=me_form, course=course,
+                           headings=headings, data=data, data2=data2, sheadings=sheadings)
 
 
 # @app.route('/about')
