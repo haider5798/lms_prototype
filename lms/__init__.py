@@ -1,3 +1,5 @@
+import datetime
+
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
@@ -6,10 +8,11 @@ from flask_mail import Mail
 
 UPLOAD_FOLDER = 'static/assignments'
 ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
-
+today = datetime.datetime.now()
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'idontgiveashit'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
+app.jinja_env.add_extension('jinja2.ext.loopcontrols')
 db = SQLAlchemy(app)
 bcrypt = Bcrypt(app)
 login_manager = LoginManager(app)

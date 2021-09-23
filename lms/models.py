@@ -44,7 +44,7 @@ class AssignmentSubmitted(db.Model, UserMixin):
     assignment_file = db.Column(db.String(50), nullable=False)
 
     def __repr__(self):
-        return f"SubmittedAssignment('{self.Course}', '{self.Student_username}', '{self.plag_percentage}')"
+        return f"SubmittedAssignment('{self.course}', '{self.Student_username}', '{self.plag_percentage}')"
 
 
 class NewAssignments(db.Model, UserMixin):

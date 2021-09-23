@@ -103,8 +103,8 @@ class AssignmentSubmissionForm(FlaskForm):
     assignment_file = FileField('Select Assignment File', validators=[FileAllowed(ALLOWED_EXTENSIONS)])
     upload_assignment = SubmitField('Upload')
 
-    def validate_submission(self):
-        user = AssignmentSubmitted.query.filter_by(username=current_user.username).first()
+    def validate_submission(self, assignment):
+        user = AssignmentSubmitted.query.filter_by(student_username=current_user.name, id=assignment.id).first()
         if user:
             raise ValidationError('Assignment has already been submitted.')
 

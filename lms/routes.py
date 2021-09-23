@@ -1,10 +1,12 @@
 import os
 import secrets
 from PIL import Image
-from flask import (Response, redirect, flash, render_template, url_for, request, session)
+from flask import (Response, redirect, flash, render_template, url_for, request, session, send_file,
+                   send_from_directory)
 from flask_login import login_user, logout_user, current_user, login_required
+from sqlalchemy import or_, and_
 
-from lms import app, bcrypt, db, mail
+from lms import app, bcrypt, db, mail, UPLOAD_FOLDER, today
 from lms.forms import (RegistrationForm, LoginForm, UpdateAccountForm, CreateNewAssignmentForm, CourseAssignedForm,
                        StudentEnrolmentForm, UserSearchForm, RequestResetForm, ResetPasswordForm,
                        AssignmentSubmissionForm,
@@ -128,7 +130,7 @@ def save_assignment(file):
     random_hex = secrets.token_hex()
     _, f_ext = os.path.splitext(file.filename)
     assignment_fn = random_hex + f_ext
-    assignment_path = os.path.join(app.root_path, 'static/assignments', assignment_fn)
+    assignment_path = os.path.join(app.root_path, UPLOAD_FOLDER, assignment_fn)
     file.save(assignment_path)
     return assignment_fn
 
@@ -141,11 +143,18 @@ def detail_page(course):
     me_form = MarksEntryForm()
     headings = ['Assignment ID', 'Student Name', 'Plagiarism Percentage', 'Marks', '']
     sheadings = ['Assignment ID', 'Title', ' Due Date', 'Marks Obtained', '']
+    exp_assignments = db.session.query(NewAssignments).filter(NewAssignments.due_date < today).all()
+    if exp_assignments:
+        for assignment in exp_assignments:
+            assign = NewAssignments.query.get(assignment.id)
+            db.session.delete(assign)
+            db.session.commit()
     assignments = NewAssignments.query.filter_by(course=course).all()
     assignments_list = [(i.id, i.description) for i in assignments]
     as_form.assignment.choices = assignments_list
     data = AssignmentSubmitted.query.filter_by(course=course).all()
     data2 = NewAssignments.query.filter_by(course=course).all()
+
     if current_user.user_category == 'Student':
         if as_form.validate_on_submit():
             file_name = save_assignment(as_form.assignment_file.data)
@@ -172,10 +181,17 @@ def detail_page(course):
                            headings=headings, data=data, data2=data2, sheadings=sheadings)
 
 
+@app.route('/download-file/<filename>',  methods=['GET', 'POST'])
+def download_file(filename):
+    uploads = os.path.join(app.root_path, app.config['UPLOAD_FOLDER'])
+    return send_from_directory(directory=uploads, filename=filename)
+
+
 # @app.route('/about')
 # @login_required
 # def about():
 #     return render_template('about.html', title='About')
+
 
 def save_picture(form_picture):
     random_hex = secrets.token_hex()

@@ -98,13 +98,26 @@
                             <th scope="row">{{ row.id }}</th>
                             <th scope="row">{{ row.description }}</th>
                             <th scope="row">{{ row.due_date }}</th>
-                            {% for i in data if i.student_username==current_user.username %}
-                                <th scope="row">{{ i.marks_obt }}</th>
+                            {% if data%}
+                                {% for i in data%}
+                                    {% if i.id==row.id %}
+                                        {% if i.marks_obt is not none %}
+                                            <th scope="row">{{ i.marks_obt }}</th>
+                                            {% break %}
+                                        {% else %}
+                                            <th scope="row">Not Marked</th>
+                                            {% break %}
+                                        {% endif %}
+                                    {% else %}
+                                        <th scope="row">Not Submitted</th>
+                                        {% break %}
+                                    {% endif %}
+                                {% endfor %}
                             {% else %}
-                                <th scope="row">Not Marked</th>
-                            {% endfor %}
+                                <th scope="row">Not Submitted</th>
+                            {% endif%}
                             <th scope="row">
-                                <a href="#" class="btn btn-warning btn-xs">Download</a>
+                                <a href="/download-file/{{row.assignment_file}}" class="btn btn-warning btn-xs">Download</a>
                             </th>
                         </tr>
                         {% endfor %}
@@ -146,7 +159,7 @@
                     </div>
                     </fieldset>
                     <div class="form-group text-center">
-                    {{ form.submit(class="btn btn-info") }}
+                    {{ form.upload_assignment(class="btn btn-info") }}
                 </div>
               </form>
               </div>
@@ -183,12 +196,11 @@
                                           Enter Marks
                                         </button>
                                     </th>
-<!--                                    <th scope="row"><a href="#" class="btn btn-warning btn-xs">Enter Marks</a></th>-->
                                 {% elif row.marks_obt is not none %}
                                     <th scope="row">{{ row.marks_obt }}</th>
                                 {% endif %}
                                 <th scope="row">
-                                    <a href="#" class="btn btn-warning btn-xs">View File</a>
+                                    <a href="{{ url_for('download_file', filename=row.assignment_file) }}" class="btn btn-warning btn-xs">Download</a>
                                 </th>
                             </tr>
                             {% endfor %}
