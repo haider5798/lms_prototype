@@ -7,7 +7,9 @@ from flask_login import LoginManager
 from flask_mail import Mail
 
 UPLOAD_FOLDER = 'static/assignments'
-ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
+log_file = 'lms/static/logfile.txt'
+nltk_data = 'static/nltk_data'
+ALLOWED_EXTENSIONS = {'pdf'}
 today = datetime.datetime.now()
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'idontgiveashit'

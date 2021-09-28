@@ -188,7 +188,7 @@
                                 <th scope="row">{{ row.id }}</th>
                                 <th scope="row">{{ row.student_username }}</th>
                                 <th scope="row">
-                                    <a href="#" class="btn btn-warning btn-xs">Check Plagiarism</a>
+                                    <a href="/plag_check/{{course}}/{{row.assignment_file}}/" class="btn btn-warning btn-xs">Check Plagiarism</a>
                                 </th>
                                 {% if row.marks_obt is none %}
                                     <th scope="row">

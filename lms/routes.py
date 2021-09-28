@@ -1,6 +1,7 @@
 import os
 import secrets
 from PIL import Image
+from text_matcher import text_matcher as tm
 from flask import (Response, redirect, flash, render_template, url_for, request, session, send_file,
                    send_from_directory)
 from flask_login import login_user, logout_user, current_user, login_required
@@ -121,6 +122,15 @@ def register():
     return render_template('register.html', title='Account Registration', form=reg_form, )
 
 
+@app.route('/plag_check/<course>/<filename>/', methods=['GET', 'POST'])
+def plag_check(course, filename):
+    uploads = os.path.join(app.root_path, app.config['UPLOAD_FOLDER'])
+    data = tm.cli(uploads+'/'+filename, 'lms/static/database/')
+    if data:
+        pass
+    return redirect(url_for('detail_page', course=course))
+
+
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
@@ -181,7 +191,7 @@ def detail_page(course):
                            headings=headings, data=data, data2=data2, sheadings=sheadings)
 
 
-@app.route('/download-file/<filename>',  methods=['GET', 'POST'])
+@app.route('/download-file/<filename>', methods=['GET', 'POST'])
 def download_file(filename):
     uploads = os.path.join(app.root_path, app.config['UPLOAD_FOLDER'])
     return send_from_directory(directory=uploads, filename=filename)
