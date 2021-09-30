@@ -6,7 +6,8 @@ from flask_bcrypt import Bcrypt
 from flask_login import LoginManager
 from flask_mail import Mail
 
-UPLOAD_FOLDER = 'static/assignments'
+UPLOAD_FOLDER = 'static/assignments/'
+DATABASE_FOLDER = 'static/database/'
 log_file = 'lms/static/logfile.txt'
 nltk_data = 'static/nltk_data'
 ALLOWED_EXTENSIONS = {'pdf'}
@@ -28,6 +29,7 @@ app.config['MAIL_USE_TLS'] = True
 app.config['MAIL_USERNAME'] = 'example@gmail.com'
 app.config['MAIL_PASSWORD'] = 'password'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['DATABASE_FOLDER'] = DATABASE_FOLDER
 mail = Mail(app)
 
 from lms import routes

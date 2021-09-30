@@ -7,7 +7,7 @@ from flask import (Response, redirect, flash, render_template, url_for, request,
 from flask_login import login_user, logout_user, current_user, login_required
 from sqlalchemy import or_, and_
 
-from lms import app, bcrypt, db, mail, UPLOAD_FOLDER, today
+from lms import app, bcrypt, db, mail, UPLOAD_FOLDER, today, DATABASE_FOLDER
 from lms.forms import (RegistrationForm, LoginForm, UpdateAccountForm, CreateNewAssignmentForm, CourseAssignedForm,
                        StudentEnrolmentForm, UserSearchForm, RequestResetForm, ResetPasswordForm,
                        AssignmentSubmissionForm,
@@ -125,7 +125,8 @@ def register():
 @app.route('/plag_check/<course>/<filename>/', methods=['GET', 'POST'])
 def plag_check(course, filename):
     uploads = os.path.join(app.root_path, app.config['UPLOAD_FOLDER'])
-    data = tm.cli(uploads+'/'+filename, 'lms/static/database/')
+    database = os.path.join(app.root_path, app.config['DATABASE_FOLDER'])
+    data = tm.cli(uploads+filename, database+'jlskdjflskjdflksjdfklsjdfjkl.pdf')
     if data:
         pass
     return redirect(url_for('detail_page', course=course))
