@@ -72,7 +72,7 @@
                     <a href="{{url_for('register')}}">Don't Have An Account?</a>
                 </small>
             </form>
-        <div class="container-fluid bg-secondary">
+        <div class="container-fluid">
           {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
               {% for category, message in messages %}

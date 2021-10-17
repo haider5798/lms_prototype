@@ -88,7 +88,6 @@ def course_management():
 
 
 @app.route('/account_management', methods=['GET', 'POST'])
-@login_required
 def account_management():
     reg_form = RegistrationForm()
     search_form = UserSearchForm()
@@ -105,7 +104,7 @@ def account_management():
         db.session.commit()
         return redirect(url_for('account_management'))
     return render_template('account_management.html', title='User Accounts Management', form=reg_form, data=data,
-                           headings=headings)
+                           headings=headings, search_form=search_form)
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -119,17 +118,27 @@ def register():
         db.session.add(user)
         db.session.commit()
         return redirect(url_for('login'))
-    return render_template('register.html', title='Account Registration', form=reg_form, )
+    return render_template('register.html', title='Account Registration', form=reg_form)
 
 
-@app.route('/plag_check/<course>/<filename>/', methods=['GET', 'POST'])
-def plag_check(course, filename):
+@app.route('/plag_check/<course>/<filename>/<id>/', methods=['GET', 'POST'])
+def plag_check(course, filename, id):
     uploads = os.path.join(app.root_path, app.config['UPLOAD_FOLDER'])
     database = os.path.join(app.root_path, app.config['DATABASE_FOLDER'])
-    data = tm.cli(uploads+filename, database+'jlskdjflskjdflksjdfklsjdfjkl.pdf')
-    if data:
-        pass
-    return redirect(url_for('detail_page', course=course))
+    try:
+        plag_report_file, plag_percentage = tm.cli(uploads+filename, database+'jlskdjflskjdflksjdfklsjdfjkl.pdf')
+        if plag_report_file:
+            assign = AssignmentSubmitted.query.get(id)
+            print(plag_report_file)
+            assign.plag_report = plag_report_file
+            if plag_percentage:
+                assign.plag_percentage = plag_percentage
+            db.session.flush()
+            db.session.commit()
+        return redirect(url_for('detail_page', course=course))
+    except Exception as E:
+        print(E)
+        return redirect(url_for('detail_page', course=course))
 
 
 def allowed_file(filename):
@@ -194,9 +203,14 @@ def detail_page(course):
 
 @app.route('/download-file/<filename>', methods=['GET', 'POST'])
 def download_file(filename):
-    uploads = os.path.join(app.root_path, app.config['UPLOAD_FOLDER'])
-    return send_from_directory(directory=uploads, filename=filename)
+    directory = os.path.join(app.root_path, app.config['UPLOAD_FOLDER'])
+    return send_from_directory(directory=directory, filename=filename)
 
+
+@app.route('/download_report_file/<filename>', methods=['GET', 'POST'])
+def download_report_file(filename):
+    directory = os.path.join(app.root_path, app.config['PLAG_REPORT'])
+    return send_from_directory(directory=directory, filename=filename)
 
 # @app.route('/about')
 # @login_required

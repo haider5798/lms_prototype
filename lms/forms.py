@@ -19,7 +19,7 @@ class RegistrationForm(FlaskForm):
                         validators=[DataRequired(), Email()], render_kw={"placeholder": "i.e abc@example.com"})
     address = StringField('Address', validators=[DataRequired()], render_kw={"placeholder": "i.e Lahore, Pakistan"})
     mobile_no = StringField('Mobile No', validators=[DataRequired(), Length(min=11, max=11)],
-                            render_kw={"placeholder": "0300 0000000"})
+                            render_kw={"placeholder": "03000000000"})
     user_category = SelectField('User Category', choices=['Admin', 'Student', 'Teacher'])
     password = PasswordField('Password', validators=[DataRequired()], render_kw={"placeholder": "Password"})
     confirm_password = PasswordField('Confirm Password',
@@ -40,7 +40,7 @@ class RegistrationForm(FlaskForm):
             raise ValidationError('Email is Already taken. Please choose different Email.')
 
     @staticmethod
-    def validate_mobile(self, mobile_no):
+    def validate_mobile_no(self, mobile_no):
         user = User.query.filter_by(mobile_no=mobile_no.data).first()
         if user:
             raise ValidationError('Mobile No is Associated with different Account, Please Recheck.')
@@ -66,12 +66,14 @@ class UpdateAccountForm(FlaskForm):
     picture = FileField('Update Profile Picture', validators=[FileAllowed(['jpg', 'png'])])
     submit = SubmitField('Update')
 
+    @staticmethod
     def validate_username(self, username):
         if username.data != current_user.username:
             user = User.query.filter_by(username=username.data).first()
             if user:
                 raise ValidationError('That username is taken. Please choose a different one.')
 
+    @staticmethod
     def validate_email(self, email):
         if email.data != current_user.email:
             user = User.query.filter_by(email=email.data).first()
@@ -84,6 +86,7 @@ class RequestResetForm(FlaskForm):
                         validators=[DataRequired(), Email()], render_kw={"placeholder": "i.e abc@example.com"})
     submit = SubmitField('Request Password Reset')
 
+    @staticmethod
     def validate_email(self, email, user_category):
         user = user_category.query.filter_by(email=email.data).first()
         if user is None:
@@ -103,10 +106,11 @@ class AssignmentSubmissionForm(FlaskForm):
     assignment_file = FileField('Select Assignment File', validators=[FileAllowed(ALLOWED_EXTENSIONS)])
     upload_assignment = SubmitField('Upload')
 
-    def validate_submission(self, assignment):
-        user = AssignmentSubmitted.query.filter_by(student_username=current_user.name, id=assignment.id).first()
+    @staticmethod
+    def validate_assignment(self, assignment):
+        user = AssignmentSubmitted.query.filter_by(student_username=current_user.name, id=assignment.data).first()
         if user:
-            raise ValidationError('Assignment has already been submitted.')
+            raise ValidationError('Assignment Submitted')
 
 
 class CreateNewAssignmentForm(FlaskForm):
@@ -117,26 +121,35 @@ class CreateNewAssignmentForm(FlaskForm):
 
 
 class CreateNewCourseForm(FlaskForm):
-    title = StringField('Course Title', validators=[DataRequired(), Length(min=5, max=20)])
+    title = StringField('Course Title', validators=[DataRequired(), Length(min=5, max=25)])
     create_course = SubmitField('Create')
+
+    @staticmethod
+    def validate_title(self, title):
+        course = Course.query.filter_by(title=title.data).first()
+        if course:
+            raise ValidationError('Course already Exists.')
 
 
 class CourseAssignedForm(FlaskForm):
     title = SelectField('Course Title', validators=[InputRequired()])
     assign_course = SubmitField('Enroll')
 
-    def validate_assignment(self, title):
-        data = Course.query.filter_by(title=title.data).first()
-        if data.assigned_to:
-            raise ValidationError('Course has already been Assigned.')
+    @staticmethod
+    def validate_title(self, title):
+        data = Course.query.filter_by(id=title.data[0]).first()
+        if data:
+            if data.assigned_to:
+                raise ValidationError('Course has already been Assigned.')
 
 
 class StudentEnrolmentForm(FlaskForm):
     title = SelectField('Course Title', validators=[InputRequired()])
     enroll_student = SubmitField('Enroll')
 
-    def validate_enrolment(self, title):
-        data = EnrolledStudent.query.filter_by(title=title.data).all()
+    @staticmethod
+    def validate_title(self, title):
+        data = EnrolledStudent.query.filter_by(course_id=title.data[0]).all()
         for d in data:
             if d.student_id == current_user.id:
                 raise ValidationError('Already Enrolled in this Course.')

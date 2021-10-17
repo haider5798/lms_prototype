@@ -1,2 +1,2 @@
-"lms/list1.docx","lms/list2.docx","3","5","3","4","11924","11901","[(2564, 5006), (6011, 9911), (11218, 11924)]","[(2545, 4988), (5999, 9899), (11194, 11901)]"
-"C:\Users\M Nadeem Haider\Desktop\LMS Prototype\lms\static/assignments/e8495fefbe57eee5f88d860647e552c7515057d3a77d4ff53644508742cc70a1.pdf","C:\Users\M Nadeem Haider\Desktop\LMS Prototype\lms\static/database/jlskdjflskjdflksjdfklsjdfjkl.pdf","3","5","3","1","1555","18410","[(4, 168)]","[(8545, 8713)]"
+Text A,Text B,Threshold,Cutoff,N-Grams,Num Matches,Text A Length,Text B Length,Locations in A,Locations in B
+"C:\Users\M Nadeem Haider\Desktop\LMS Prototype\lms\static/assignments/5d95778621583a1662e88323241ebc8ebda9bf650ce694fa03fef343d22bed37.pdf","C:\Users\M Nadeem Haider\Desktop\LMS Prototype\lms\static/database/jlskdjflskjdflksjdfklsjdfjkl.pdf","3","5","3","1","1555","18410","[(4, 168)]","[(8545, 8713)]"

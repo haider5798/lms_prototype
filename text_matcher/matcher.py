@@ -5,13 +5,17 @@ import os
 import json
 import logging
 import itertools
+import secrets
+
 import nltk
+from flask_login import current_user
 from difflib import SequenceMatcher
 from nltk.metrics.distance import edit_distance as editDistance
 from nltk.stem.lancaster import LancasterStemmer
 from nltk.util import ngrams
 from string import punctuation
 from termcolor import colored
+from lms import app
 
 
 class Text:
@@ -119,6 +123,7 @@ class Matcher():
                                  if min(match.sizeA, match.sizeB) >= cutoff]
 
         self.numMatches = len(self.extended_matches)
+        self.filename = ""
 
     def get_initial_matches(self):
         """
@@ -276,12 +281,17 @@ class Matcher():
 
     def match(self):
         """ Gets and prints all matches. """
-        print("i'm in match")
+        hex_ = secrets.token_hex()
+        self.filename = hex_ + ".txt"
+        plag_report = os.path.join(app.root_path, app.config['PLAG_REPORT'])
+        filename = os.path.join(plag_report, self.filename)
+        f = open(filename, "w")
         for num, match in enumerate(self.extended_matches):
             print('match: ', match)
             out = self.getMatch(match)
             print('\n')
             print('match %s:' % (num + 1), flush=True)
             print(out, flush=True)
-
-        return self.numMatches, self.locationsA, self.locationsB
+            f.write('match: ' + str(match) + '\n' + 'match %s:' % (num + 1)+out+'\n')
+        f.close()
+        return self.numMatches, self.locationsA, self.locationsB, self.filename

@@ -40,11 +40,12 @@ class AssignmentSubmitted(db.Model, UserMixin):
     student_username = db.Column(db.String(20), unique=False, nullable=False)
     course = db.Column(db.String(20), unique=False, nullable=False)
     plag_percentage = db.Column(db.Integer, nullable=True)
+    plag_report = db.Column(db.String(50), unique=True, nullable=True)
     marks_obt = db.Column(db.Integer, nullable=True)
     assignment_file = db.Column(db.String(50), nullable=False)
 
     def __repr__(self):
-        return f"SubmittedAssignment('{self.course}', '{self.Student_username}', '{self.plag_percentage}')"
+        return f"SubmittedAssignment('{self.course}', '{self.student_username}', '{self.plag_percentage}')"
 
 
 class NewAssignments(db.Model, UserMixin):
@@ -69,7 +70,7 @@ class Course(db.Model, UserMixin):
 
 class EnrolledStudent(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
-    course_id = db.Column(db.Integer, unique=True, nullable=False)
+    course_id = db.Column(db.Integer, unique=False, nullable=False)
     student_id = db.Column(db.Integer, unique=False, nullable=False)
 
     def __repr__(self):

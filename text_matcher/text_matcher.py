@@ -1,4 +1,6 @@
 # coding: utf-8
+import secrets
+
 import PyPDF2
 import click
 from .matcher import Text, ExtendedMatch, Matcher
@@ -7,7 +9,7 @@ import glob
 import csv
 import logging
 import itertools
-from lms import log_file
+from lms import log_file, app
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -164,8 +166,14 @@ def cli(text1, text2, threshold=3, cutoff=5, ngrams=3, logfile=log_file, verbose
             f = open(logfile, 'a')
             f.write(line)
             f.close()
-            return True
+            return str(myMatch.filename), str(myMatch.numMatches)
         else:
-            print('No Match Found')
-            return False
+            hex_ = secrets.token_hex()
+            filename = hex_ + ".txt"
+            plag_report = os.path.join(app.root_path, app.config['PLAG_REPORT'])
+            filename = os.path.join(plag_report, filename)
+            f = open(filename, "w")
+            f.write('No Match Found')
+            f.close()
+            return filename, str(0)
 

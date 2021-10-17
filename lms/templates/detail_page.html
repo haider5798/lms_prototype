@@ -187,9 +187,15 @@
                             <tr>
                                 <th scope="row">{{ row.id }}</th>
                                 <th scope="row">{{ row.student_username }}</th>
-                                <th scope="row">
-                                    <a href="/plag_check/{{course}}/{{row.assignment_file}}/" class="btn btn-warning btn-xs">Check Plagiarism</a>
-                                </th>
+                                {% if row.plag_report is none %}
+                                    <th scope="row">
+                                        <a href="/plag_check/{{course}}/{{row.assignment_file}}/{{row.id}}/" class="btn btn-warning btn-xs">Check Plagiarism</a>
+                                    </th>
+                                {% elif row.plag_report is not none %}
+                                    <th scope="row">
+                                        <a href="{{ url_for('download_report_file', filename=row.plag_report) }}" class="btn btn-warning btn-xs">Download Report</a>
+                                    </th>
+                                {% endif %}
                                 {% if row.marks_obt is none %}
                                     <th scope="row">
                                         <button type="button" class="btn btn-warning btn-xs" data-toggle="modal" data-target="#Mark_assignment{{ row.id }}">
