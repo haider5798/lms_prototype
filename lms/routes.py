@@ -7,7 +7,7 @@ from flask import (Response, redirect, flash, render_template, url_for, request,
 from flask_login import login_user, logout_user, current_user, login_required
 from sqlalchemy import or_, and_
 
-from lms import app, bcrypt, db, mail, UPLOAD_FOLDER, today, DATABASE_FOLDER
+from lms import app, bcrypt, db, mail, UPLOAD_FOLDER, today
 from lms.forms import (RegistrationForm, LoginForm, UpdateAccountForm, CreateNewAssignmentForm, CourseAssignedForm,
                        StudentEnrolmentForm, UserSearchForm, RequestResetForm, ResetPasswordForm,
                        AssignmentSubmissionForm,
@@ -93,6 +93,7 @@ def account_management():
     search_form = UserSearchForm()
     headings = ['Username', 'User Category', 'Email', '']
     data = User.query.all()
+    data.sort(key=lambda x: x.id, reverse=True)
     if reg_form.validate_on_submit():
         hashed_pass = bcrypt.generate_password_hash(reg_form.password.data).decode('utf-8')
         user = User(name=reg_form.name.data, username=reg_form.username.data, email=reg_form.email.data,
@@ -129,7 +130,6 @@ def plag_check(course, filename, id):
         plag_report_file, plag_percentage = tm.cli(uploads+filename, database+'jlskdjflskjdflksjdfklsjdfjkl.pdf')
         if plag_report_file:
             assign = AssignmentSubmitted.query.get(id)
-            print(plag_report_file)
             assign.plag_report = plag_report_file
             if plag_percentage:
                 assign.plag_percentage = plag_percentage
@@ -173,7 +173,9 @@ def detail_page(course):
     assignments_list = [(i.id, i.description) for i in assignments]
     as_form.assignment.choices = assignments_list
     data = AssignmentSubmitted.query.filter_by(course=course).all()
+    data.sort(key=lambda x: x.id, reverse=True)
     data2 = NewAssignments.query.filter_by(course=course).all()
+    data2.sort(key=lambda x: x.id, reverse=True)
 
     if current_user.user_category == 'Student':
         if as_form.validate_on_submit():
