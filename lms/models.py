@@ -37,6 +37,7 @@ class User(db.Model, UserMixin):
 
 class AssignmentSubmitted(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
+    assignment_id = db.Column(db.Integer, nullable=False)
     student_username = db.Column(db.String(20), unique=False, nullable=False)
     course = db.Column(db.String(20), unique=False, nullable=False)
     plag_percentage = db.Column(db.Integer, nullable=True)

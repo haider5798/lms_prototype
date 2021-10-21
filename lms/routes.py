@@ -180,7 +180,8 @@ def detail_page(course):
     if current_user.user_category == 'Student':
         if as_form.validate_on_submit():
             file_name = save_assignment(as_form.assignment_file.data)
-            file = AssignmentSubmitted(student_username=current_user.name, course=course, assignment_file=file_name)
+            file = AssignmentSubmitted(assignment_id=as_form.assignment.data, student_username=current_user.name,
+                                       course=course, assignment_file=file_name)
             db.session.add(file)
             db.session.commit()
             return redirect(url_for('detail_page', course=course))

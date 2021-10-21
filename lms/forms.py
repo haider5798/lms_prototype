@@ -18,7 +18,7 @@ class RegistrationForm(FlaskForm):
     email = StringField('Email',
                         validators=[DataRequired(), Email()], render_kw={"placeholder": "i.e abc@example.com"})
     address = StringField('Address', validators=[DataRequired()], render_kw={"placeholder": "i.e Lahore, Pakistan"})
-    mobile_no = StringField('Mobile No', validators=[DataRequired(), Length(min=11, max=11)],
+    mobile_no = StringField('Mobile No', validators=[Length(min=11, max=11)],
                             render_kw={"placeholder": "03000000000"})
     user_category = SelectField('User Category', choices=['Admin', 'Student', 'Teacher'])
     password = PasswordField('Password', validators=[DataRequired()], render_kw={"placeholder": "Password"})
@@ -48,7 +48,7 @@ class RegistrationForm(FlaskForm):
 
 class LoginForm(FlaskForm):
     username = StringField('Username',
-                           validators=[DataRequired(), Length(min=2, max=20)], render_kw={"placeholder": "Jhonny"})
+                           validators=[DataRequired(), Length(min=2, max=20)], render_kw={"placeholder": "username"})
     password = PasswordField('Password', validators=[DataRequired()], render_kw={"placeholder": "Password"})
     remember = BooleanField('Remember Me')
     login = SubmitField('Login')
@@ -108,8 +108,9 @@ class AssignmentSubmissionForm(FlaskForm):
 
     @staticmethod
     def validate_assignment(self, assignment):
-        user = AssignmentSubmitted.query.filter_by(student_username=current_user.name, id=assignment.data).first()
-        if user:
+        result = AssignmentSubmitted.query.filter_by(student_username=current_user.name,
+                                                     assignment_id=assignment.data).first()
+        if result:
             raise ValidationError('Assignment Submitted')
 
 
@@ -128,7 +129,7 @@ class CreateNewCourseForm(FlaskForm):
     def validate_title(self, title):
         course = Course.query.filter_by(title=title.data).first()
         if course:
-            raise ValidationError('Course already Exists.')
+            raise ValidationError('Course Exists')
 
 
 class CourseAssignedForm(FlaskForm):
@@ -140,7 +141,7 @@ class CourseAssignedForm(FlaskForm):
         data = Course.query.filter_by(id=title.data[0]).first()
         if data:
             if data.assigned_to:
-                raise ValidationError('Course has already been Assigned.')
+                raise ValidationError('Course is already Assigned')
 
 
 class StudentEnrolmentForm(FlaskForm):
@@ -152,7 +153,7 @@ class StudentEnrolmentForm(FlaskForm):
         data = EnrolledStudent.query.filter_by(course_id=title.data[0]).all()
         for d in data:
             if d.student_id == current_user.id:
-                raise ValidationError('Already Enrolled in this Course.')
+                raise ValidationError('Already Enrolled in this Course')
 
 
 class MarksEntryForm(FlaskForm):
