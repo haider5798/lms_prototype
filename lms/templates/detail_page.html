@@ -3,9 +3,23 @@
 <div class="container clearfix border p-3">
     {% if current_user.user_category == 'Teacher'%}
     <div class="jumbotron jumbotron-fluid text-white " style="background-image: url({{ url_for('static', filename='teacher.jpg')}}); background-size: cover;">
-    {% else %}
+    {% elif current_user.user_category == 'Student' %}
     <div class="jumbotron jumbotron-fluid text-white " style="background-image: url({{ url_for('static', filename='jumbo.jpg')}}); background-size: cover;">
+    {% elif current_user.user_category == 'Admin' %}
+    <div class="jumbotron jumbotron-fluid text-white " style="background-image: url({{ url_for('static', filename='admin.jpg')}}); background-size: cover;">
     {% endif %}
+        <div class="container">
+        <h2 class="display-4 text-white">{{course|upper()}}</h2>
+        <p class="lead">Department of Computer Sciences</p>
+        </div>
+        {%  with user_category = current_user.user_category %}
+            {% if user_category == 'Teacher' %}
+            <button type="button" class="btn btn-info float-right mr-4" data-toggle="modal" data-target="#create_new_assignment">
+              Create New Assignment
+            </button>
+            {% endif %}
+        {% endwith %}
+    </div>
 <!--    Popup Modal New Assignment -->
     <div class="modal fade" id="create_new_assignment" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered" role="document">
