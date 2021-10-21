@@ -100,17 +100,19 @@
                             <th scope="row">{{ row.due_date }}</th>
                             {% if data%}
                                 {% for i in data%}
-                                    {% if i.id==row.id %}
-                                        {% if i.marks_obt is not none %}
-                                            <th scope="row">{{ i.marks_obt }}</th>
-                                            {% break %}
+                                    {% if i.student_username == current_user.name %}
+                                        {% if i.assignment_id==row.id %}
+                                            {% if i.marks_obt is not none %}
+                                                <th scope="row">{{ i.marks_obt }}</th>
+                                                {% break %}
+                                            {% else %}
+                                                <th scope="row">Not Marked</th>
+                                                {% break %}
+                                            {% endif %}
                                         {% else %}
-                                            <th scope="row">Not Marked</th>
+                                            <th scope="row">Not Submitted</th>
                                             {% break %}
                                         {% endif %}
-                                    {% else %}
-                                        <th scope="row">Not Submitted</th>
-                                        {% break %}
                                     {% endif %}
                                 {% endfor %}
                             {% else %}

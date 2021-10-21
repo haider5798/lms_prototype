@@ -5,7 +5,7 @@ from wtforms import StringField, PasswordField, SubmitField, BooleanField, Selec
 from wtforms.validators import DataRequired, Length, EqualTo, Email, ValidationError, InputRequired
 from lms.models import User, AssignmentSubmitted, NewAssignments, Course, EnrolledStudent
 from wtforms.fields.html5 import DateField
-from lms import ALLOWED_EXTENSIONS
+from lms import ALLOWED_EXTENSIONS, today
 
 
 class RegistrationForm(FlaskForm):
@@ -119,6 +119,11 @@ class CreateNewAssignmentForm(FlaskForm):
     due_date = DateField('Due Date', format='%Y-%m-%d', validators=[DataRequired()])
     assignment_file = FileField('File', validators=[FileAllowed(ALLOWED_EXTENSIONS)])
     create_assignment = SubmitField('Post Assignment')
+
+    @staticmethod
+    def validate_due_date(self, due_date):
+        if due_date.data < today:
+            raise ValidationError('Invalid Date. Please Select A Valid Date')
 
 
 class CreateNewCourseForm(FlaskForm):

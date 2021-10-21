@@ -161,8 +161,8 @@ def detail_page(course):
     as_form = AssignmentSubmissionForm()
     na_form = CreateNewAssignmentForm()
     me_form = MarksEntryForm()
-    headings = ['Assignment ID', 'Student Name', 'Plagiarism Percentage', 'Marks', '']
-    sheadings = ['Assignment ID', 'Title', ' Due Date', 'Marks Obtained', '']
+    headings = ['S.No', 'Student Name', 'Plagiarism Percentage', 'Marks', '']
+    sheadings = ['S.No', 'Title', ' Due Date', 'Marks Obtained', '']
     exp_assignments = db.session.query(NewAssignments).filter(NewAssignments.due_date < today).all()
     if exp_assignments:
         for assignment in exp_assignments:
