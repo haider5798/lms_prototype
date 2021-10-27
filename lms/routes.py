@@ -163,19 +163,14 @@ def detail_page(course):
     tc_form = TeacherComment()
     headings = ['S.No', 'Student Name', 'Plagiarism', 'Marks', 'Comments', '']
     sheadings = ['S.No', 'Title', ' Due Date', 'Marks Obtained', 'Plagiarism', "Teacher's Comments", '']
-    exp_assignments = db.session.query(NewAssignments).filter(NewAssignments.due_date < today).all()
-    if exp_assignments:
-        for assignment in exp_assignments:
-            assign = NewAssignments.query.get(assignment.id)
-            db.session.delete(assign)
-            db.session.commit()
-    assignments = NewAssignments.query.filter_by(course=course).all()
-    assignments_list = [(i.id, i.description) for i in assignments]
+    active_assignments = db.session.query(NewAssignments).filter(NewAssignments.due_date >= today).all()
+    assignments_list = [(i.id, i.description) for i in active_assignments]
     as_form.assignment.choices = assignments_list
     data = AssignmentSubmitted.query.filter_by(course=course).all()
-    data.sort(key=lambda x: x.id, reverse=True)
+    # data.sort(key=lambda x: x.id, reverse=True)   # Sort the data so that each new entry show upfront
     data2 = NewAssignments.query.filter_by(course=course).all()
-    data2.sort(key=lambda x: x.id, reverse=True)
+    # data2.sort(key=lambda x: x.id, reverse=True)  # # Sort the data so that each new entry show upfront
+    sas_ids = [i.assignment_id for i in data]
 
     if current_user.user_category == 'Student':
         if as_form.validate_on_submit():
@@ -207,7 +202,7 @@ def detail_page(course):
             db.session.commit()
             return redirect(url_for('detail_page', course=course))
     return render_template('detail_page.html', form=as_form, form2=na_form, meform=me_form, tcform=tc_form,
-                           course=course, headings=headings, data=data, data2=data2, sheadings=sheadings)
+                           course=course, headings=headings, data=data, data2=data2, sas_ids=sas_ids, sheadings=sheadings)
 
 
 @app.route('/download-file/<filename>', methods=['GET', 'POST'])

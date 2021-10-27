@@ -106,28 +106,35 @@
                             <th scope="row">{{ row.due_date }}</th>
                             {% if data%}
                                 {% for i in data%}
-                                    {% if row.id==i.assignment_id and i.student_username == current_user.username %}
-                                        {% if i.marks_obt is not none %}
-                                            <th scope="row">{{ i.marks_obt }}</th>
-                                        {% else %}
-                                            <th scope="row">Not Marked</th>
+                                    {% if row.id in sas_ids%}
+                                        {% if row.id==i.assignment_id and i.student_username == current_user.username %}
+                                            {% if i.marks_obt is not none %}
+                                                <th scope="row">{{ i.marks_obt }}</th>
+                                            {% else %}
+                                                <th scope="row">Not Marked</th>
+                                            {% endif %}
+                                            {% if i.plag_percentage is not none %}
+                                                <th scope="row">{{ i.plag_percentage }} M</th>
+                                            {% else %}
+                                                <th scope="row"> ------- </th>
+                                            {% endif %}
+                                            {% if i.teacher_comments is not none %}
+                                                <th scope="row">
+                                                    <button type="button" class="btn btn-warning btn-sm" data-toggle="modal" data-target="#view_teacher_comments{{ row.id }}">
+                                                      View Comments
+                                                    </button>
+                                                </th>
+                                                {% break %}
+                                            {% else %}
+                                                <th scope="row"> ------  </th>
+                                                {% break %}
+                                            {% endif %}
                                         {% endif %}
-                                        {% if i.plag_percentage is not none %}
-                                            <th scope="row">{{ i.plag_percentage }} M</th>
-                                        {% else %}
-                                            <th scope="row"> ------- </th>
-                                        {% endif %}
-                                        {% if i.teacher_comments is not none %}
-                                            <th>
-                                            <button type="button" class="btn btn-warning btn-xs" data-toggle="modal" data-target="#view_teacher_comments{{ row.id }}">
-                                              View Comments
-                                            </button>
-                                            </th>
-                                            {% break %}
-                                        {% else %}
-                                            <th scope="row"> ------  </th>
-                                            {% break %}
-                                        {% endif %}
+                                    {% else %}
+                                        <th scope="row">Not Submitted</th>
+                                        <th scope="row"> ------ </th>
+                                        <th scope="row"> ------ </th>
+                                        {% break %}
                                     {% endif %}
                                 {% endfor %}
                             {% else %}
@@ -136,7 +143,7 @@
                                 <th scope="row"> ------ </th>
                             {% endif%}
                             <th scope="row">
-                                <a href="/download-file/{{row.assignment_file}}" class="btn btn-warning btn-xs">Download</a>
+                                <a href="/download-file/{{row.assignment_file}}" class="btn btn-warning btn-sm">Download</a>
                             </th>
                         </tr>
                         {% endfor %}
@@ -208,16 +215,16 @@
                                 <th scope="row">{{ row.student_username }}</th>
                                 {% if row.plag_report is none %}
                                     <th scope="row">
-                                        <a href="/plag_check/{{course}}/{{row.assignment_file}}/{{row.id}}/" class="btn btn-warning btn-xs">Check Plagiarism</a>
+                                        <a href="/plag_check/{{course}}/{{row.assignment_file}}/{{row.id}}/" class="btn btn-warning btn-sm">Check Plagiarism</a>
                                     </th>
                                 {% elif row.plag_report is not none %}
                                     <th scope="row">
-                                        <a href="{{ url_for('download_report_file', filename=row.plag_report) }}" class="btn btn-warning btn-xs">Download Report</a>
+                                        <a href="{{ url_for('download_report_file', filename=row.plag_report) }}" class="btn btn-warning btn-sm">Download Report</a>
                                     </th>
                                 {% endif %}
                                 {% if row.marks_obt is none %}
                                     <th scope="row">
-                                        <button type="button" class="btn btn-warning btn-xs" data-toggle="modal" data-target="#Mark_assignment{{ row.id }}">
+                                        <button type="button" class="btn btn-warning btn-sm" data-toggle="modal" data-target="#Mark_assignment{{ row.id }}">
                                           Enter Marks
                                         </button>
                                     </th>
@@ -225,12 +232,12 @@
                                     <th scope="row">{{ row.marks_obt }}</th>
                                 {% endif %}
                                 <th scope="row">
-                                    <button type="button" class="btn btn-warning btn-xs" data-toggle="modal" data-target="#teacher_comments_entry{{ row.id }}">
+                                    <button type="button" class="btn btn-warning btn-sm" data-toggle="modal" data-target="#teacher_comments_entry{{ row.id }}">
                                       Add Comments
                                     </button>
                                 </th>
                                 <th scope="row">
-                                    <a href="{{ url_for('download_file', filename=row.assignment_file) }}" class="btn btn-warning btn-xs">Download</a>
+                                    <a href="{{ url_for('download_file', filename=row.assignment_file) }}" class="btn btn-warning btn-sm">Download</a>
                                 </th>
                             </tr>
                             {% endfor %}
