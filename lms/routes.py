@@ -10,8 +10,7 @@ from sqlalchemy import or_, and_
 from lms import app, bcrypt, db, mail, UPLOAD_FOLDER, today
 from lms.forms import (RegistrationForm, LoginForm, UpdateAccountForm, CreateNewAssignmentForm, CourseAssignedForm,
                        StudentEnrolmentForm, UserSearchForm, RequestResetForm, ResetPasswordForm,
-                       AssignmentSubmissionForm,
-                       CreateNewCourseForm, MarksEntryForm)
+                       AssignmentSubmissionForm, CreateNewCourseForm, MarksEntryForm, TeacherComment)
 from lms.models import User, AssignmentSubmitted, NewAssignments, Course, EnrolledStudent
 from flask_mail import Message
 from lms import ALLOWED_EXTENSIONS
@@ -161,8 +160,9 @@ def detail_page(course):
     as_form = AssignmentSubmissionForm()
     na_form = CreateNewAssignmentForm()
     me_form = MarksEntryForm()
-    headings = ['S.No', 'Student Name', 'Plagiarism Percentage', 'Marks', '']
-    sheadings = ['S.No', 'Title', ' Due Date', 'Marks Obtained', '']
+    tc_form = TeacherComment()
+    headings = ['S.No', 'Student Name', 'Plagiarism', 'Marks', 'Comments', '']
+    sheadings = ['S.No', 'Title', ' Due Date', 'Marks Obtained', 'Plagiarism', "Teacher's Comments", '']
     exp_assignments = db.session.query(NewAssignments).filter(NewAssignments.due_date < today).all()
     if exp_assignments:
         for assignment in exp_assignments:
@@ -180,7 +180,7 @@ def detail_page(course):
     if current_user.user_category == 'Student':
         if as_form.validate_on_submit():
             file_name = save_assignment(as_form.assignment_file.data)
-            file = AssignmentSubmitted(assignment_id=as_form.assignment.data, student_username=current_user.name,
+            file = AssignmentSubmitted(assignment_id=as_form.assignment.data, student_username=current_user.username,
                                        course=course, assignment_file=file_name)
             db.session.add(file)
             db.session.commit()
@@ -200,8 +200,14 @@ def detail_page(course):
             db.session.flush()
             db.session.commit()
             return redirect(url_for('detail_page', course=course))
-    return render_template('detail_page.html', form=as_form, form2=na_form, meform=me_form, course=course,
-                           headings=headings, data=data, data2=data2, sheadings=sheadings)
+        elif tc_form.validate_on_submit():
+            assignment = AssignmentSubmitted.query.filter_by(id=tc_form.assignment_id.data).first()
+            assignment.teacher_comments = tc_form.teacher_comment.data
+            db.session.flush()
+            db.session.commit()
+            return redirect(url_for('detail_page', course=course))
+    return render_template('detail_page.html', form=as_form, form2=na_form, meform=me_form, tcform=tc_form,
+                           course=course, headings=headings, data=data, data2=data2, sheadings=sheadings)
 
 
 @app.route('/download-file/<filename>', methods=['GET', 'POST'])

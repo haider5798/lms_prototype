@@ -1,7 +1,8 @@
 from flask_login import current_user
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileAllowed, FileField
-from wtforms import StringField, PasswordField, SubmitField, BooleanField, SelectField, IntegerField
+from wtforms import StringField, PasswordField, SubmitField, BooleanField, SelectField, IntegerField, validators, \
+    TextAreaField
 from wtforms.validators import DataRequired, Length, EqualTo, Email, ValidationError, InputRequired
 from lms.models import User, AssignmentSubmitted, NewAssignments, Course, EnrolledStudent
 from wtforms.fields.html5 import DateField
@@ -108,10 +109,15 @@ class AssignmentSubmissionForm(FlaskForm):
 
     @staticmethod
     def validate_assignment(self, assignment):
-        result = AssignmentSubmitted.query.filter_by(student_username=current_user.name,
+        result = AssignmentSubmitted.query.filter_by(student_username=current_user.username,
                                                      assignment_id=assignment.data).first()
         if result:
             raise ValidationError('Assignment Submitted')
+
+    @staticmethod
+    def validate_assignment_file(self, assignment_file):
+        if assignment_file.data is None:
+            raise ValidationError('Are You Fucking Nuts! No File Selected')
 
 
 class CreateNewAssignmentForm(FlaskForm):
@@ -124,6 +130,11 @@ class CreateNewAssignmentForm(FlaskForm):
     def validate_due_date(self, due_date):
         if due_date.data < today:
             raise ValidationError('Invalid Date. Please Select A Valid Date')
+
+    @staticmethod
+    def validate_assignment_file(self, assignment_file):
+        if assignment_file.data is None:
+            raise ValidationError('Are You Fucking Nuts! No File Selected')
 
 
 class CreateNewCourseForm(FlaskForm):
@@ -165,3 +176,9 @@ class MarksEntryForm(FlaskForm):
     assignment_id = StringField('Assignment ID', validators=[DataRequired()])
     marks = IntegerField('Enter Marks', validators=[InputRequired()])
     submit_marks = SubmitField('Submit')
+
+
+class TeacherComment(FlaskForm):
+    assignment_id = StringField('Assignment ID', validators=[DataRequired()])
+    teacher_comment = TextAreaField('Comments', [validators.optional(), validators.length(max=300)])
+    submit_comment = SubmitField('Submit')

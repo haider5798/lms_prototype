@@ -161,19 +161,11 @@ def cli(text1, text2, threshold=3, cutoff=5, ngrams=3, logfile=log_file, verbose
             logItems = [pair[0], pair[1], threshold, cutoff, ngrams, myMatch.numMatches, myMatch.textA.length,
                         myMatch.textB.length, str(myMatch.locationsA), str(myMatch.locationsB)]
             # print('Logging items: %s' % str(logItems))
-            print(str(logItems))
             line = ','.join(['"%s"' % item for item in logItems]) + '\n'
             f = open(logfile, 'a')
             f.write(line)
             f.close()
             return str(myMatch.filename), str(myMatch.numMatches)
         else:
-            hex_ = secrets.token_hex()
-            filename = hex_ + ".txt"
-            plag_report = os.path.join(app.root_path, app.config['PLAG_REPORT'])
-            filename = os.path.join(plag_report, filename)
-            f = open(filename, "w")
-            f.write('No Match Found')
-            f.close()
-            return filename, str(0)
+            return str(myMatch.filename), str(myMatch.numMatches)
 

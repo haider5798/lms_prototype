@@ -106,23 +106,34 @@
                             <th scope="row">{{ row.due_date }}</th>
                             {% if data%}
                                 {% for i in data%}
-                                    {% if i.student_username == current_user.name %}
-                                        {% if i.assignment_id==row.id %}
-                                            {% if i.marks_obt is not none %}
-                                                <th scope="row">{{ i.marks_obt }}</th>
-                                                {% break %}
-                                            {% else %}
-                                                <th scope="row">Not Marked</th>
-                                                {% break %}
-                                            {% endif %}
+                                    {% if row.id==i.assignment_id and i.student_username == current_user.username %}
+                                        {% if i.marks_obt is not none %}
+                                            <th scope="row">{{ i.marks_obt }}</th>
                                         {% else %}
-                                            <th scope="row">Not Submitted</th>
+                                            <th scope="row">Not Marked</th>
+                                        {% endif %}
+                                        {% if i.plag_percentage is not none %}
+                                            <th scope="row">{{ i.plag_percentage }} M</th>
+                                        {% else %}
+                                            <th scope="row"> ------- </th>
+                                        {% endif %}
+                                        {% if i.teacher_comments is not none %}
+                                            <th>
+                                            <button type="button" class="btn btn-warning btn-xs" data-toggle="modal" data-target="#view_teacher_comments{{ row.id }}">
+                                              View Comments
+                                            </button>
+                                            </th>
+                                            {% break %}
+                                        {% else %}
+                                            <th scope="row"> ------  </th>
                                             {% break %}
                                         {% endif %}
                                     {% endif %}
                                 {% endfor %}
                             {% else %}
                                 <th scope="row">Not Submitted</th>
+                                <th scope="row"> ------ </th>
+                                <th scope="row"> ------ </th>
                             {% endif%}
                             <th scope="row">
                                 <a href="/download-file/{{row.assignment_file}}" class="btn btn-warning btn-xs">Download</a>
@@ -214,6 +225,11 @@
                                     <th scope="row">{{ row.marks_obt }}</th>
                                 {% endif %}
                                 <th scope="row">
+                                    <button type="button" class="btn btn-warning btn-xs" data-toggle="modal" data-target="#teacher_comments_entry{{ row.id }}">
+                                      Add Comments
+                                    </button>
+                                </th>
+                                <th scope="row">
                                     <a href="{{ url_for('download_file', filename=row.assignment_file) }}" class="btn btn-warning btn-xs">Download</a>
                                 </th>
                             </tr>
@@ -279,8 +295,82 @@
       </div>
     </div>
 {% endfor %}
-<!--    end Modal -->
+<!--    Popup Modal End -->
+<!--    Popup Modal Teacher Comments Entry-->
+{% for row in data %}
+    <div class="modal fade" id="teacher_comments_entry{{ row.id }}" tabindex="-1" role="dialog" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="modal-header bg-light" >
+            <h5 class="modal-title"> Teacher's Comments </h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+        <form method="POST" action="" enctype="multipart/form-data">
+            {{ tcform.csrt_token }}
+            {{ tcform.hidden_tag() }}
+          <div class="modal-body" >
+                <fieldset class="form-group">
+                    <div class="form-group">
+                        {{ tcform.assignment_id.label(class="form-control-label d-none") }}
+                            {% if tcform.assignment_id.errors %}
+                            {{ tcform.assignment_id(class="form-control form-control-sm is-invalid") }}
+                            <div class="invalid-feedback">
+                                {% for error in tcform.assignment_id.errors %}
+                                    <span>{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                            {% else %}
+                            {{ tcform.assignment_id(class="form-control form-control-sm d-none", value=row.id, readonly=True ) }}
+                            {% endif %}
+                    </div>
+                    <div class="form-group">
+                        {{ tcform.teacher_comment.label(class="form-control-label d-none") }}
+                            {% if tcform.teacher_comment.errors %}
+                            {{ tcform.teacher_comment(class="form-control form-control-sm is-invalid") }}
+                            <div class="invalid-feedback">
+                                {% for error in tcform.teacher_comment.errors %}
+                                    <span>{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                            {% else %}
+                        {{ tcform.teacher_comment(class="form-control form-control-sm") }}
+                        {% endif %}
+                    </div>
+                </fieldset>
+          </div>
+          <div class="modal-footer bg-light">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            {{ tcform.submit_comment(class="btn btn-warning") }}
+          </div>
+        </form>
+        </div>
+      </div>
+    </div>
+{% endfor %}
+<!--    Popup Modal End -->
+<!--    Popup Modal Teacher Comments View -->
+{% for row in data %}
+    <div class="modal fade" id="view_teacher_comments{{ row.id }}" tabindex="-1" role="dialog" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="modal-header bg-light" >
+            <h5 class="modal-title">Teacher's Comments</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body" >
+                {{ row.teacher_comments }}
+          </div>
+          <div class="modal-footer bg-light">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          </div>
+        </form>
+        </div>
+      </div>
+    </div>
+{% endfor %}
+<!--    Popup Modal End -->
 {% endblock content %}
-
-
-

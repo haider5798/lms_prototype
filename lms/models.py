@@ -42,6 +42,7 @@ class AssignmentSubmitted(db.Model, UserMixin):
     course = db.Column(db.String(20), unique=False, nullable=False)
     plag_percentage = db.Column(db.Integer, nullable=True)
     plag_report = db.Column(db.String(50), unique=True, nullable=True)
+    teacher_comments = db.Column(db.String(250), nullable=True)
     marks_obt = db.Column(db.Integer, nullable=True)
     assignment_file = db.Column(db.String(50), nullable=False)
 
