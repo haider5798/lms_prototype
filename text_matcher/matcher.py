@@ -8,7 +8,6 @@ import itertools
 import secrets
 
 import nltk
-from flask_login import current_user
 from difflib import SequenceMatcher
 from nltk.metrics.distance import edit_distance as editDistance
 from nltk.stem.lancaster import LancasterStemmer

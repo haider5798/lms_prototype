@@ -134,7 +134,8 @@ def plag_check(course, filename, id):
                 assign.plag_percentage = plag_percentage
             db.session.flush()
             db.session.commit()
-        return redirect(url_for('detail_page', course=course))
+            flash('Plagiarism Check Successful!', 'success')
+            return redirect(url_for('detail_page', course=course))
     except Exception as E:
         print(E)
         return redirect(url_for('detail_page', course=course))
@@ -179,6 +180,7 @@ def detail_page(course):
                                        course=course, assignment_file=file_name)
             db.session.add(file)
             db.session.commit()
+            flash('Assignment Submit Successfully!', 'success')
             return redirect(url_for('detail_page', course=course))
     if current_user.user_category == 'Teacher':
         if na_form.validate_on_submit():
@@ -188,7 +190,8 @@ def detail_page(course):
                                       course=course, assignment_file=file_name)
                 db.session.add(file)
                 db.session.commit()
-                return redirect(url_for('detail_page', course=course))
+                flash('Assignment Created Successfully!', 'success')
+            return redirect(url_for('detail_page', course=course))
         elif me_form.validate_on_submit():
             assignment = AssignmentSubmitted.query.filter_by(id=me_form.assignment_id.data).first()
             assignment.marks_obt = me_form.marks.data
@@ -200,6 +203,7 @@ def detail_page(course):
             assignment.teacher_comments = tc_form.teacher_comment.data
             db.session.flush()
             db.session.commit()
+            flash('Teachers Commented Successfully!', 'success')
             return redirect(url_for('detail_page', course=course))
     return render_template('detail_page.html', form=as_form, form2=na_form, meform=me_form, tcform=tc_form,
                            course=course, headings=headings, data=data, data2=data2, sas_ids=sas_ids, sheadings=sheadings)
@@ -244,7 +248,7 @@ def user_profile():
             picture_file = save_picture(update_form.picture.data)
             current_user.image_file = picture_file
         db.session.commit()
-        # flash('Your account has been updated!', 'success')
+        flash('Your Profile has been updated!', 'success')
         return redirect(url_for('user_profile'))
     elif request.method == 'GET':
         update_form.name.data = current_user.name
@@ -265,6 +269,7 @@ def delete_user(id):
     data = User.query.get(id)
     db.session.delete(data)
     db.session.commit()
+    flash('User Deleted!', 'success')
     return redirect(url_for('account_management'))
 
 
@@ -273,6 +278,7 @@ def delete_course(id):
     data = Course.query.get(id)
     db.session.delete(data)
     db.session.commit()
+    flash('Course Deleted!', 'success')
     return redirect(url_for('course_management'))
 
 

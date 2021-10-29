@@ -5,6 +5,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager
 from flask_mail import Mail
+from flask_toastr import Toastr
 
 UPLOAD_FOLDER = 'static/assignments/'
 DATABASE_FOLDER = 'static/database/'
@@ -19,6 +20,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 app.jinja_env.add_extension('jinja2.ext.loopcontrols')
 db = SQLAlchemy(app)
 bcrypt = Bcrypt(app)
+toastr = Toastr(app)
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 login_manager.login_message_category = 'info'
