@@ -1,2 +1,2 @@
 # LMS Prototype
-Powered By Bakha Production.
+Powered By Bakha Productions.
