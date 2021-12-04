@@ -12,12 +12,12 @@
             {% with user_cat = current_user.user_category %}
             {% if user_cat == 'Teacher' %}
                 <p class="lead ml-2">Faculty Department of Computer Science</p>
-                <button type="button" class="btn btn-info float-right mr-4" data-toggle="modal" data-target="#course_assignment">
+                <button type="button" class="btn btn-info float-right mr-4" data-toggle="modal" data-target="#course_assignment" data-backdrop="static" data-keyboard="false">
                   Course Enrollment
                 </button>
             {% elif user_cat == 'Student' %}
                 <p class="lead ml-2">Department of Computer Science</p>
-                <button type="button" class="btn btn-info float-right mr-4" data-toggle="modal" data-target="#student_enrolment">
+                <button type="button" class="btn btn-info float-right mr-4" data-toggle="modal" data-target="#student_enrolment" data-backdrop="static" data-keyboard="false">
                   Course Enrollment
                 </button>
             {% else %}

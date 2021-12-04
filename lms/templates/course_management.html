@@ -12,7 +12,7 @@
         <div class="container">
             <h2 class="display-4 text-white">Welcome to Course Management Panel!</h2>
                 <p class="lead">Administration Department</p>
-            <button type="button" class="btn btn-info float-right mr-4" data-toggle="modal" data-target="#course_create">
+            <button type="button" class="btn btn-info float-right mr-4" data-toggle="modal" data-target="#course_create" data-backdrop="static" data-keyboard="false">
               Create New Course
             </button>
         </div>
@@ -22,8 +22,8 @@
         <div class="card-header font-weight-bold bg-secondary text-white">
         Course Detail
         </div>
-        <div class="card-body text-center">
-            <table class="table table-hover table-striped">
+        <div class="card-body text-center table-responsive">
+            <table class="table table-hover">
               <thead>
                 <tr>
                     {% for heading in headings %}
@@ -32,24 +32,24 @@
                 </tr>
               </thead>
                 <tbody>
-                {% for row in data %}
-                <tr>
-                    <th scope="row">{{ row.id }}</th>
-                    <th scope="row">{{ row.title}}</th>
-                    {% if row.assigned_to %}
-                        <th scope="row">{{ row.assigned_to}}</th>
-                    {% else %}
-                        <th scope="row">Not Assigned</th>
-                    {% endif %}
-                    <th scope="row">
-                        <a href="/delete_course/{{row.id}}/" class="btn btn-warning btn-xs">Delete</a>
-                    </th>
-                </tr>
-                {% endfor %}
+                    {% for row in data %}
+                        <tr>
+                            <th scope="row">{{ row.id }}</th>
+                            <th scope="row">{{ row.title}}</th>
+                            {% if row.assigned_to %}
+                                <th scope="row">{{ row.assigned_to}}</th>
+                            {% else %}
+                                <th scope="row">Not Assigned</th>
+                            {% endif %}
+                            <th scope="row">
+                                <a href="/delete_course/{{row.id}}/" class="btn btn-warning btn-xs">Delete</a>
+                            </th>
+                        </tr>
+                    {% endfor %}
                 </tbody>
-        </table>
-            </div>
-            </div>
+            </table>
+        </div>
+    </div>
 </div>
 <!--    Popup Modal -->
 <div class="modal fade" id="course_create" tabindex="-1" role="dialog" aria-hidden="true">

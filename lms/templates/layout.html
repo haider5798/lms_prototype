@@ -13,20 +13,25 @@
     <title>{{ title }}</title>
     {% else %}
     <title> Plagiarism Detection</title>
-    {% endif%}
     <style>
-    .table tbody{
-        font-size: 13px;
-    }
+        .table tbody{font-size: 13px;}
+
+        .nav-tabs li a{ border-color: black; background-color:grey;}
+
+        .nav-tabs .nav-item .nav-link {color: white;}
+
+        .nav-tabs .nav-item .nav-link.active {color:black;}
+
     </style>
+    {% endif%}
     {{ toastr.include_jquery() }}
     {{ toastr.include_toastr_css() }}
     {{ toastr.message() }}
 </head>
-<body style="background: #ffffff">
+<body style="background: #ffffff" >
     {{ toastr.include_toastr_js() }}
     <header class="site-header">
-      <nav class="navbar navbar-expand-md navbar-dark bg-steel">
+      <nav class="navbar sticky-top navbar-expand-md navbar-dark bg-steel">
         <div class="container">
           <a class="navbar-brand mr-4" href="{{ url_for('home') }}">Plagiarism Detection System</a>
           <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggle" aria-controls="navbarToggle" aria-expanded="false" aria-label="Toggle navigation">
@@ -61,9 +66,6 @@
         </div>
       </nav>
     </header>
-<!--<script type="text/javascript">window.setTimeout("document.getElementById('alerts').style.display='none';", 3500); </script> -->
-
-
     {% block content %} {% endblock %}
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>

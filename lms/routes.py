@@ -10,7 +10,8 @@ from sqlalchemy import or_, and_
 from lms import app, bcrypt, db, mail, UPLOAD_FOLDER, today
 from lms.forms import (RegistrationForm, LoginForm, UpdateAccountForm, CreateNewAssignmentForm, CourseAssignedForm,
                        StudentEnrolmentForm, UserSearchForm, RequestResetForm, ResetPasswordForm,
-                       AssignmentSubmissionForm, CreateNewCourseForm, MarksEntryForm, TeacherComment)
+                       AssignmentSubmissionForm, CreateNewCourseForm, MarksEntryForm, TeacherComment,
+                       AssignmentSelection)
 from lms.models import User, AssignmentSubmitted, NewAssignments, Course, EnrolledStudent
 from flask_mail import Message
 from lms import ALLOWED_EXTENSIONS
@@ -54,6 +55,7 @@ def home():
             course.assigned_to = current_user.username
             db.session.flush()
             db.session.commit()
+            flash('Course Assigned Successfully', 'success')
             return redirect(url_for('home'))
     elif current_user.user_category == 'Student':
         courses = []
@@ -66,6 +68,7 @@ def home():
             student = EnrolledStudent(course_id=sen_form.title.data, student_id=current_user.id)
             db.session.add(student)
             db.session.commit()
+            flash('Student Enrollment Successful', 'success')
             return redirect(url_for('home'))
     return render_template('home.html', title='Home', form=sen_form, form2=ten_form, courses=courses,
                            sum_details=sum_details)
@@ -81,6 +84,7 @@ def course_management():
         course = Course(title=cc_form.title.data)
         db.session.add(course)
         db.session.commit()
+        flash('Course Created!', 'success')
         return redirect(url_for('course_management'))
     return render_template('course_management.html', title='Course Management', form=cc_form, headings=headings,
                            data=courses)
@@ -162,11 +166,16 @@ def detail_page(course):
     na_form = CreateNewAssignmentForm()
     me_form = MarksEntryForm()
     tc_form = TeacherComment()
-    headings = ['S.No', 'Student Name', 'Plagiarism', 'Marks', 'Comments', '']
+    as_select_form = AssignmentSelection()
+    sa_headings = ['S.No', 'Student Username', 'Plagiarism', 'Marks', 'Comments', '']
+    na_headings = ['S.No', 'Assignment Title', 'Due Date', '']
     sheadings = ['S.No', 'Title', ' Due Date', 'Marks Obtained', 'Plagiarism', "Teacher's Comments", '']
     active_assignments = db.session.query(NewAssignments).filter(NewAssignments.due_date >= today).all()
+    all_assignments = db.session.query(NewAssignments)
+    all_assign_list = [(i.id, i.description) for i in all_assignments]
     assignments_list = [(i.id, i.description) for i in active_assignments]
     as_form.assignment.choices = assignments_list
+    as_select_form.title.choices = all_assign_list
     data = AssignmentSubmitted.query.filter_by(course=course).all()
     # data.sort(key=lambda x: x.id, reverse=True)   # Sort the data so that each new entry show upfront
     data2 = NewAssignments.query.filter_by(course=course).all()
@@ -205,8 +214,13 @@ def detail_page(course):
             db.session.commit()
             flash('Teachers Commented Successfully!', 'success')
             return redirect(url_for('detail_page', course=course))
+        elif as_select_form.validate_on_submit():
+            submitted_assignments = AssignmentSubmitted.query.filter_by(id=as_select_form.title.data).all()
+            flash('Success!', 'success')
+            return redirect(url_for('detail_page', course=course, data=submitted_assignments))
     return render_template('detail_page.html', form=as_form, form2=na_form, meform=me_form, tcform=tc_form,
-                           course=course, headings=headings, data=data, data2=data2, sas_ids=sas_ids, sheadings=sheadings)
+                           as_select_form=as_select_form, course=course, sa_headings=sa_headings,
+                           na_headings=na_headings, data=data, data2=data2, sas_ids=sas_ids, sheadings=sheadings)
 
 
 @app.route('/download-file/<filename>', methods=['GET', 'POST'])
@@ -280,6 +294,19 @@ def delete_course(id):
     db.session.commit()
     flash('Course Deleted!', 'success')
     return redirect(url_for('course_management'))
+
+
+@app.route('/delete_assignment/<id>/', methods=['GET', 'POST'])
+def delete_assignment(id):
+    try:
+        data = NewAssignments.query.get(id)
+        db.session.delete(data)
+        db.session.commit()
+        flash('Assignment Deleted!', 'success')
+        return redirect(url_for('detail_page'))
+    except:
+        flash('Something Went Wrong! Please Try Again', 'Danger')
+        return redirect(url_for('detail_page'))
 
 
 def send_reset_email(user):

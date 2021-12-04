@@ -1,3 +1,5 @@
+import os
+
 from flask_login import current_user
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileAllowed, FileField
@@ -182,3 +184,8 @@ class TeacherComment(FlaskForm):
     assignment_id = StringField('Assignment ID', validators=[DataRequired()])
     teacher_comment = TextAreaField('Comments', [validators.optional(), validators.length(max=300)])
     submit_comment = SubmitField('Submit')
+
+
+class AssignmentSelection(FlaskForm):
+    title = SelectField('Assignment', validators=[InputRequired()])
+    this_assignment = SubmitField('Show')
