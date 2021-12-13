@@ -6,15 +6,14 @@ import json
 import logging
 import itertools
 import secrets
-
 import nltk
 from difflib import SequenceMatcher
+from flask import current_app
 from nltk.metrics.distance import edit_distance as editDistance
 from nltk.stem.lancaster import LancasterStemmer
 from nltk.util import ngrams
 from string import punctuation
 from termcolor import colored
-from lms import app
 
 
 class Text:
@@ -133,7 +132,7 @@ class Matcher():
         matchingBlocks = sequence.get_matching_blocks()
 
         # Only return the matching sequences that are higher than the
-        # threshold given by the user.
+        # threshold given by the users.
         highMatchingBlocks = [match for match in matchingBlocks if match.size > self.threshold]
 
         numBlocks = len(highMatchingBlocks)
@@ -282,7 +281,7 @@ class Matcher():
         """ Gets and prints all matches. """
         hex_ = secrets.token_hex()
         self.filename = hex_ + ".txt"
-        plag_report = os.path.join(app.root_path, app.config['PLAG_REPORT'])
+        plag_report = os.path.join(current_app.root_path, current_app.config['PLAG_REPORT'])
         filename = os.path.join(plag_report, self.filename)
         f = open(filename, "w")
         for num, match in enumerate(self.extended_matches):

@@ -9,7 +9,7 @@ import glob
 import csv
 import logging
 import itertools
-from lms import log_file, app
+from lms import logfile
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -73,7 +73,7 @@ def PDFReader(filename):
     return full_text
 
 
-def cli(text1, text2, threshold=3, cutoff=5, ngrams=3, logfile=log_file, verbose=False, stops=False):
+def cli(text1, text2, threshold=3, cutoff=5, ngrams=3, logfile=logfile, verbose=False, stops=False):
     """ This program finds similar text in two text files. """
 
     # Determine whether the given path is a file or directory.
@@ -168,4 +168,3 @@ def cli(text1, text2, threshold=3, cutoff=5, ngrams=3, logfile=log_file, verbose
             return str(myMatch.filename), str(myMatch.numMatches)
         else:
             return str(myMatch.filename), str(myMatch.numMatches)
-

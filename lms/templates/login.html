@@ -65,11 +65,11 @@
                 <div class="form-group">
                 {{ form.login(class="btn btn-outline-info") }}
                     <small class="text-muted ml-2 ">
-                        <a href="{{url_for('reset_request')}}">Forgot Password?</a>
+                        <a href="{{url_for('users.reset_request')}}">Forgot Password?</a>
                     </small>
                 </div>
                 <small class="text-muted ml-2 ">
-                    <a href="{{url_for('register')}}">Don't Have An Account?</a>
+                    <a href="{{url_for('users.register')}}">Don't Have An Account?</a>
                 </small>
             </form>
         <script type="text/javascript">window.setTimeout("document.getElementById('alerts').style.display='none';", 2000); </script>

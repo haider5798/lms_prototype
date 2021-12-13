@@ -1,3 +1,12 @@
 .idea
-text_matcher/__p*
+lms/text_matcher/__p*
 lms/__p*
+lms/static/plag_reports
+lms/static/database
+lms/static/assignments
+lms/static/nltk_data
+lms/static/profile_pics
+lms/courses/__p*
+lms/errors/__p*
+lms/main/__p*
+lms/users/__p*

@@ -184,7 +184,7 @@
                                             </th>
                                         {% elif row.plag_report is not none %}
                                             <th scope="row">
-                                                <a href="{{ url_for('download_report_file', filename=row.plag_report) }}" class="btn btn-warning btn-sm">Download Report</a>
+                                                <a href="{{ url_for('courses.download_report_file', filename=row.plag_report) }}" class="btn btn-warning btn-sm">Download Report</a>
                                             </th>
                                         {% endif %}
                                         {% if row.marks_obt is none %}
@@ -202,7 +202,7 @@
                                             </button>
                                         </th>
                                         <th scope="row">
-                                            <a href="{{ url_for('download_file', filename=row.assignment_file) }}" class="btn btn-warning btn-sm">Download</a>
+                                            <a href="{{ url_for('courses.download_file', filename=row.assignment_file) }}" class="btn btn-warning btn-sm">Download</a>
                                         </th>
                                     </tr>
                                     {% endfor %}
@@ -234,7 +234,7 @@
                                         <th scope="row">{{ row.description }}</th>
                                         <th scope="row">{{ row.due_date }}</th>
                                         <th scope="row">
-                                            <a href="{{ url_for('delete_assignment', id=row.id) }}" class="btn btn-warning btn-sm">Delete</a>
+                                            <a href="/delete_assignment/{{row.id}}/{{course}}/" class="btn btn-warning btn-sm">Delete</a>
                                         </th>
                                     </tr>
                                     {% endfor %}

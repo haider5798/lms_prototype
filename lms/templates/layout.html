@@ -33,22 +33,22 @@
     <header class="site-header">
       <nav class="navbar sticky-top navbar-expand-md navbar-dark bg-steel">
         <div class="container">
-          <a class="navbar-brand mr-4" href="{{ url_for('home') }}">Plagiarism Detection System</a>
+          <a class="navbar-brand mr-4" href="{{ url_for('main.home') }}">Plagiarism Detection System</a>
           <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggle" aria-controls="navbarToggle" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
           </button>
           <div class="collapse navbar-collapse" id="navbarToggle">
             <div class="navbar-nav mr-auto">
-              <a class="nav-item nav-link" href="{{ url_for('home') }}">Home</a>
-                <a class="nav-item nav-link" href="{{ url_for('user_profile') }}">View Profile</a>
+              <a class="nav-item nav-link" href="{{ url_for('main.home') }}">Home</a>
+                <a class="nav-item nav-link" href="{{ url_for('users.user_profile') }}">View Profile</a>
                {%  with user_category = current_user.user_category %}
                     {% if user_category == 'Admin' %}
                         <div class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                              Management Services</a>
                             <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                                <a class="dropdown-item" href="{{ url_for('account_management') }}">Accounts Management</a>
-                                <a class="dropdown-item" href="{{ url_for('course_management') }}">Course Management</a>
+                                <a class="dropdown-item" href="{{ url_for('main.account_management') }}">Accounts Management</a>
+                                <a class="dropdown-item" href="{{ url_for('main.course_management') }}">Course Management</a>
                             </div>
                         </div>
                     {% endif%}
@@ -57,7 +57,7 @@
             <!-- Navbar Right Side -->
             <div class="navbar-nav">
                 <a class="nav-item nav-link" href="#">About Us</a>
-                <a class="nav-item nav-link" href="{{ url_for('logout') }}">Logout</a>
+                <a class="nav-item nav-link" href="{{ url_for('users.logout') }}">Logout</a>
                 {% if current_user.is_authenticated %}
                     <a class="nav-item nav-link">{{current_user.username[0]|upper}}{{current_user.username[1:]}}</a>
                 {% endif %}
