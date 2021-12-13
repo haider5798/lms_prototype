@@ -85,7 +85,6 @@ def download_file(filename):
 @courses.route('/download_report_file/<filename>', methods=['GET', 'POST'])
 def download_report_file(filename):
     directory = os.path.join(current_app.root_path, current_app.config['PLAG_REPORT'])
-    flash(f'Action Successful.', 'Success')
     return send_from_directory(directory=directory, filename=filename)
 
 
