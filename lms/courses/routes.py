@@ -26,6 +26,7 @@ def detail_page(course):
     all_assignments = db.session.query(NewAssignments)
     all_assign_list = [(i.id, i.description) for i in all_assignments]
     assignments_list = [(i.id, i.description) for i in active_assignments]
+    all_assign_list.insert(0, (0, 'All'))
     as_form.assignment.choices = assignments_list
     as_select_form.title.choices = all_assign_list
     data = AssignmentSubmitted.query.filter_by(course=course).all()
@@ -67,9 +68,25 @@ def detail_page(course):
             flash('Teachers Commented Successfully!', 'success')
             return redirect(url_for('courses.detail_page', course=course))
         elif as_select_form.validate_on_submit():
-            submitted_assignments = AssignmentSubmitted.query.filter_by(id=as_select_form.title.data).all()
+            search_assign = as_select_form.title.data
+            if int(search_assign) > 0:
+                submitted_assignments = AssignmentSubmitted.query.filter(AssignmentSubmitted.id == search_assign,
+                                                                         AssignmentSubmitted.course == course).all()
+            else:
+                submitted_assignments = AssignmentSubmitted.query.filter_by(course=course).all()
+            # Search queries for ORM
+            # LIKE: query.filter(User.name.like('%ednalan%'))
+            # equals: query.filter(User.name == 'ednalan')
+            # IN: query.filter(User.name.in_(['rai', 'kenshin', 'Ednalan']))
+            # AND: query.filter(User.name == 'ednalan', User.fullname == 'clyde ednalan')
+            # OR:
+            # from sqlalchemy import or_
+            # filter(or_(User.name == 'ednalan', User.name == 'caite'))
             flash('Success!', 'success')
-            return redirect(url_for('courses.detail_page', course=course, data=submitted_assignments))
+            return render_template('detail_page.html', form=as_form, form2=na_form, meform=me_form, tcform=tc_form,
+                                   as_select_form=as_select_form, course=course, sa_headings=sa_headings,
+                                   na_headings=na_headings, data=submitted_assignments, data2=data2, sas_ids=sas_ids,
+                                   sheadings=sheadings)
     return render_template('detail_page.html', form=as_form, form2=na_form, meform=me_form, tcform=tc_form,
                            as_select_form=as_select_form, course=course, sa_headings=sa_headings,
                            na_headings=na_headings, data=data, data2=data2, sas_ids=sas_ids, sheadings=sheadings)
